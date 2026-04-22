@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Notes - CodeLinkers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Tabs Styles */
+        .tabs-container {
+            max-width: 100%;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+            padding: 8px;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
+        body.dark .tabs-nav {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        body.light .tabs-nav {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        body.dark .tab-btn {
+            background: transparent;
+            color: var(--text-dark-muted);
+        }
+
+        body.light .tab-btn {
+            background: transparent;
+            color: var(--text-light-muted);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        body.dark .tab-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        body.light .tab-btn:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .notes-header {
+            margin-bottom: 32px;
+        }
+
+        .notes-header h2 {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+        }
+
+        .notes-header p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .notes-header p {
+            color: var(--text-light-muted);
+        }
+
+        /* Note Card */
+        .note-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .note-icon {
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .note-info {
+            flex: 1;
+        }
+
+        .note-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .note-info > p {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        body.dark .note-info > p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .note-info > p {
+            color: var(--text-light-muted);
+        }
+
+        .note-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+        }
+
+        body.dark .note-meta {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .note-meta {
+            color: var(--text-light-muted);
+        }
+
+        .note-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .note-card .btn {
+            align-self: center;
+        }
+
+        @media (max-width: 768px) {
+            .note-card {
+                flex-direction: column;
+            }
+
+            .note-card .btn {
+                width: 100%;
+            }
+
+            .tabs-nav {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+    <!-- Background Gradients -->
+    <div class="bg-gradient-blur bg-gradient-1"></div>
+    <div class="bg-gradient-blur bg-gradient-2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <span class="nav-logo-text">CodeLinkers</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="games.html" class="nav-link">Games</a>
+            <a href="notes.html" class="nav-link active">Notes</a>
+            <a href="learn.html" class="nav-link">Learn Coding</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="theme-toggle" onclick="ThemeManager.toggle()">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="ModalManager.open('loginModal')">Log In</button>
+            <button class="btn btn-primary btn-sm" onclick="ModalManager.open('signupModal')">Sign Up</button>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="section-label">
+                <i class="fas fa-book"></i>
+                Resources
+            </div>
+            <h1 class="page-title">Study <span class="text-gradient">Notes</span></h1>
+            <p class="page-subtitle">Download quality notes for your exams and interviews. Updated regularly by our expert team.</p>
+        </div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="tabs-container" data-tab-group="notes">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-tab="beginner">
+                        <i class="fas fa-rocket"></i>
+                        Beginner Basics
+                    </button>
+                    <button class="tab-btn" data-tab="bca">
+                        <i class="fas fa-graduation-cap"></i>
+                        BCA Notes
+                    </button>
+                    <button class="tab-btn" data-tab="mca">
+                        <i class="fas fa-user-graduate"></i>
+                        MCA Notes
+                    </button>
+                    <button class="tab-btn" data-tab="placement">
+                        <i class="fas fa-briefcase"></i>
+                        Placement Prep
+                    </button>
+                    <button class="tab-btn" data-tab="interview">
+                        <i class="fas fa-comments"></i>
+                        Interview Q&A
+                    </button>
+                </div>
+
+                <!-- Beginner Basics Panel -->
+                <div class="tab-panel active" data-tab-panel="beginner">
+                    <div class="notes-header">
+                        <h2>Beginner Basics</h2>
+                        <p>Perfect for school students and absolute beginners starting their coding journey</p>
+                    </div>
+                     <div class="grid grid-3" data-category="beginner"></div>
+                </div>
+
+                <!-- BCA Notes Panel -->
+                <div class="tab-panel" data-tab-panel="bca">
+                    <div class="notes-header">
+                        <h2>BCA Semester Notes</h2>
+                        <p>Complete notes for all BCA semesters</p>
+                    </div>
+                    <div class="grid grid-3" data-category="bca"></div>
+                </div>
+
+                <!-- MCA Notes Panel -->
+                <div class="tab-panel" data-tab-panel="mca">
+                    <div class="notes-header">
+                        <h2>MCA Semester Notes</h2>
+                        <p>Complete notes for all MCA semesters</p>
+                    </div>
+                    <div class="grid grid-3" data-category="mca"></div>
+                </div>
+
+                <!-- Placement Panel -->
+                <div class="tab-panel" data-tab-panel="placement">
+                    <div class="notes-header">
+                        <h2>Placement Preparation</h2>
+                        <p>Resources to ace your campus placements</p>
+                    </div>
+                    <div class="grid grid-3" data-category="placement"></div>
+                </div>
+
+                <!-- Interview Panel -->
+                <div class="tab-panel" data-tab-panel="interview">
+                    <div class="notes-header">
+                        <h2>Interview Questions & Answers</h2>
+                        <p>Most asked interview questions with detailed answers</p>
+                    </div>
+                    <div class="grid grid-3" data-category="interview"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="nav-logo mb-4">
+                        <div class="nav-logo-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="nav-logo-text">CodeLinkers</span>
+                    </a>
+                    <p class="text-muted" style="max-width: 300px; margin-top: 16px;">
+                        The ultimate gamified platform for learning HTML, CSS, and more.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Platform</h4>
+                    <ul class="footer-links">
+                        <li><a href="games.html">Coding Games</a></li>
+                        <li><a href="notes.html">Study Notes</a></li>
+                        <li><a href="learn.html">Learn Coding</a></li>
+                        <li><a href="leaderboard.html">Leaderboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="notes.html#beginner">Beginner Basics</a></li>
+                        <li><a href="notes.html#bca">BCA Notes</a></li>
+                        <li><a href="notes.html#mca">MCA Notes</a></li>
+                        <li><a href="notes.html#placement">Placement Prep</a></li>
+                        <li><a href="notes.html#interview">Interview Q&A</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Connect</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CodeLinkers. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Button -->
+    <a href="chatbot.html" class="chatbot-btn">
+        <i class="fas fa-robot"></i>
+    </a>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('loginModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Welcome Back!</h2>
+            <p class="modal-subtitle">Log in to download notes</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('signupModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Create Account</h2>
+            <p class="modal-subtitle">Start your coding journey today</p>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-input" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="notes.js"></script>
+    <script>window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',500);});</script>
+</body>
+</html>

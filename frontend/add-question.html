@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Question - CodeLinkers Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="dark">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+    <div class="add-question-layout">
+        <header class="add-question-header">
+            <a href="admin.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Admin
+            </a>
+            <h1><i class="fas fa-plus-circle"></i> Add New Question</h1>
+            <div class="header-actions">
+                <button class="btn btn-ghost" onclick="resetForm()">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+                <button class="btn btn-primary" onclick="saveQuestion()">
+                    <i class="fas fa-save"></i> Save Question
+                </button>
+            </div>
+        </header>
+
+        <div class="add-question-content">
+            <div class="form-section">
+                <form id="questionForm">
+                    <div class="form-card">
+                        <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                        <div class="form-group">
+                            <label class="form-label">Question Title *</label>
+                            <input type="text" id="title" class="form-input" placeholder="e.g., Center a Div with Flexbox" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description *</label>
+                            <textarea id="description" class="form-textarea" rows="3" placeholder="Describe what the user needs to do..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><i class="fas fa-sliders-h"></i> Classification</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Topic *</label>
+                                <select id="topic" class="form-select" onchange="updateEditorLabels()" required>
+                                    <option value="">Select Topic</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Difficulty *</label>
+                                <select id="difficulty" class="form-select" required>
+                                    <option value="">Select Difficulty</option>
+                                    <option value="beginner">Beginner (5 pts)</option>
+                                    <option value="medium">Pro (10 pts)</option>
+                                    <option value="advanced">Ultra Pro (20 pts)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select id="status" class="form-select">
+                                    <option value="active">Active</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><i class="fas fa-lightbulb"></i> Hints</h3>
+                        <div class="form-group">
+                            <label class="form-label">Hints (one per line)</label>
+                            <textarea id="hints" class="form-textarea" rows="3" placeholder="Use display: flex&#10;Try justify-content property"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><i class="fas fa-code"></i> Code Setup</h3>
+                        <div class="form-group">
+                            <label class="form-label" id="initialCodeLabel">Initial HTML Code</label>
+                            <textarea id="initialCode" class="form-textarea code-input" rows="6" placeholder="<div class='container'>&#10;  <div class='box'>Content</div>&#10;</div>"></textarea>
+                        </div>
+                        <div class="form-group" id="cssCodeGroup">
+                            <label class="form-label">Expected CSS Solution *</label>
+                            <textarea id="cssCode" class="form-textarea code-input" rows="8" placeholder=".container {&#10;  display: flex;&#10;  justify-content: center;&#10;}" required></textarea>
+                        </div>
+                        <div class="form-group" id="htmlCodeGroup" style="display: none;">
+                            <label class="form-label">Expected HTML Solution *</label>
+                            <textarea id="htmlCode" class="form-textarea code-input" rows="8" placeholder="<nav class='navbar'>&#10;  <ul class='nav-list'>&#10;    <li><a href='#'>Home</a></li>&#10;  </ul>&#10;</nav>" required></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-card sticky">
+                    <h3><i class="fas fa-eye"></i> Live Preview</h3>
+                    <div class="preview-container">
+                        <iframe id="previewFrame" class="preview-iframe"></iframe>
+                    </div>
+                    <button class="btn btn-ghost btn-sm w-full" onclick="refreshPreview()">
+                        <i class="fas fa-sync-alt"></i> Refresh Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let isEditMode = false;
+        let editQuestionId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminAuth();
+            setupAutoPreview();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const questionId = urlParams.get('id');
+            if (questionId) {
+                loadQuestionForEdit(questionId);
+            }
+        });
+
+        async function checkAdminAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                alert('Please login as admin');
+                window.location.href = 'admin.html';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    alert('Admin access required');
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'admin.html';
+            }
+        }
+
+        function setupAutoPreview() {
+            ['initialCode', 'cssCode', 'htmlCode'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', refreshPreview);
+                }
+            });
+        }
+
+        function updateEditorLabels() {
+            const topic = document.getElementById('topic').value;
+            const initialLabel = document.getElementById('initialCodeLabel');
+            const cssGroup = document.getElementById('cssCodeGroup');
+            const htmlGroup = document.getElementById('htmlCodeGroup');
+            const cssCode = document.getElementById('cssCode');
+            const htmlCode = document.getElementById('htmlCode');
+            
+            if (topic === 'html') {
+                initialLabel.textContent = 'Initial HTML Structure (Optional)';
+                cssGroup.style.display = 'none';
+                htmlGroup.style.display = 'block';
+                cssCode.removeAttribute('required');
+                htmlCode.setAttribute('required', 'required');
+            } else {
+                initialLabel.textContent = 'Initial HTML Code';
+                cssGroup.style.display = 'block';
+                htmlGroup.style.display = 'none';
+                cssCode.setAttribute('required', 'required');
+                htmlCode.removeAttribute('required');
+            }
+            
+            refreshPreview();
+        }
+
+        function refreshPreview() {
+            const html = document.getElementById('initialCode').value;
+            const cssCode = document.getElementById('cssCode').value;
+            const htmlCode = document.getElementById('htmlCode').value;
+            const topic = document.getElementById('topic').value;
+            
+            let content;
+            if (topic === 'html') {
+                // For HTML questions, show the expected HTML
+                content = htmlCode || html || '<!-- Write your HTML here -->';
+            } else {
+                // For CSS questions, show HTML with CSS applied
+                content = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { 
+                                font-family: 'Inter', Arial, sans-serif; 
+                                padding: 24px;
+                                min-height: 100vh;
+                                background: #f8fafc;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            ${cssCode}
+                        </style>
+                    </head>
+                    <body>
+                        ${html}
+                    </body>
+                    </html>
+                `;
+            }
+            
+            document.getElementById('previewFrame').srcdoc = content;
+        }
+
+        async function saveQuestion() {
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const topic = document.getElementById('topic').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const hints = document.getElementById('hints').value.split('\n').filter(h => h.trim());
+            const initialCode = document.getElementById('initialCode').value.trim();
+            const cssCode = document.getElementById('cssCode').value.trim();
+            const htmlCode = document.getElementById('htmlCode').value.trim();
+            const status = document.getElementById('status').value;
+
+            if (!title || !description || !topic || !difficulty) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            // Validate based on topic
+            if (topic === 'css' && !cssCode) {
+                showToast('Please enter expected CSS solution', 'error');
+                return;
+            }
+            if (topic === 'html' && !htmlCode) {
+                showToast('Please enter expected HTML solution', 'error');
+                return;
+            }
+
+            const questionData = {
+                title,
+                description,
+                topic,
+                difficulty,
+                points: difficulty === 'beginner' ? 5 : difficulty === 'medium' ? 10 : 20,
+                hints,
+                initialHTML: initialCode || (topic === 'css' ? '<div class="container">\n  <div class="box">Content</div>\n</div>' : ''),
+                status
+            };
+
+            // Add the appropriate code field based on topic
+            if (topic === 'css') {
+                questionData.expectedCSS = cssCode;
+            } else if (topic === 'html') {
+                questionData.expectedHTML = htmlCode;
+            }
+
+            try {
+                if (isEditMode && editQuestionId) {
+                    await API.Questions.update(editQuestionId, questionData);
+                    showToast('Question updated successfully!', 'success');
+                } else {
+                    await API.Questions.create(questionData);
+                    showToast('Question created successfully!', 'success');
+                }
+                
+                setTimeout(() => window.location.href = 'admin.html#games', 1500);
+            } catch (error) {
+                console.error('Error saving question:', error);
+                showToast('Error: ' + (error.message || 'Failed to save'), 'error');
+            }
+        }
+
+        async function loadQuestionForEdit(id) {
+            try {
+                const response = await API.Questions.getById(id);
+                const q = response.data || response;
+                
+                isEditMode = true;
+                editQuestionId = id;
+                
+                document.getElementById('title').value = q.title;
+                document.getElementById('description').value = q.description;
+                document.getElementById('topic').value = q.topic;
+                document.getElementById('difficulty').value = q.difficulty;
+                document.getElementById('hints').value = q.hints?.join('\n') || '';
+                document.getElementById('initialCode').value = q.initialHTML || '';
+                document.getElementById('status').value = q.status;
+                
+                // Set the appropriate code field based on topic
+                if (q.topic === 'html') {
+                    document.getElementById('htmlCode').value = q.expectedHTML || '';
+                } else {
+                    document.getElementById('cssCode').value = q.expectedCSS || '';
+                }
+                
+                updateEditorLabels();
+                refreshPreview();
+                
+                document.querySelector('.add-question-header h1').innerHTML = '<i class="fas fa-edit"></i> Edit Question';
+                document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-save"></i> Update Question';
+            } catch (error) {
+                showToast('Error loading question', 'error');
+                setTimeout(() => window.location.href = 'admin.html', 2000);
+            }
+        }
+
+        function resetForm() {
+            if (confirm('Reset all fields?')) {
+                document.getElementById('questionForm').reset();
+                refreshPreview();
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            toast.innerHTML = `<i class="fas fa-${icons[type]}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+
+    <style>
+        .add-question-layout {
+            min-height: 100vh;
+            background: var(--bg-dark);
+        }
+
+        .add-question-header {
+            background: var(--bg-dark-card);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .add-question-header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .add-question-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            padding: 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-card {
+            background: var(--bg-dark-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .form-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .preview-section .sticky {
+            position: sticky;
+            top: 100px;
+        }
+
+        .preview-card {
+            background: var(--bg-dark-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .preview-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            height: 400px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .code-input {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1200px) {
+            .add-question-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-section .sticky {
+                position: static;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 32px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b98130; }
+        .toast.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef444430; }
+        .toast.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b30; }
+        .toast.info { background: rgba(99, 102, 241, 0.15); color: #6366f1; border: 1px solid #6366f130; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+<script>window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',500);});</script>
+</body>
+</html>

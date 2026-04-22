@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Coding - CodeLinkers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+    <!-- Background Gradients -->
+    <div class="bg-gradient-blur bg-gradient-1"></div>
+    <div class="bg-gradient-blur bg-gradient-2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <span class="nav-logo-text">CodeLinkers</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="games.html" class="nav-link">Games</a>
+            <a href="notes.html" class="nav-link">Notes</a>
+            <a href="learn.html" class="nav-link active">Learn Coding</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="theme-toggle" onclick="ThemeManager.toggle()">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="ModalManager.open('loginModal')">Log In</button>
+            <button class="btn btn-primary btn-sm" onclick="ModalManager.open('signupModal')">Sign Up</button>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="section-label">
+                <i class="fab fa-youtube"></i>
+                Video Tutorials
+            </div>
+            <h1 class="page-title">Learn <span class="text-gradient">Coding</span></h1>
+            <p class="page-subtitle">Curated YouTube tutorials from the best channels to help you learn coding effectively.</p>
+        </div>
+    </header>
+
+    <!-- Learning Sections -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <!-- HTML Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">
+                        <i class="fab fa-html5"></i>
+                    </div>
+                    <div>
+                        <h2>HTML Tutorials</h2>
+                        <p>Master the foundation of web development</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="html"></div>
+            </div>
+
+            <!-- CSS Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <i class="fab fa-css3-alt"></i>
+                    </div>
+                    <div>
+                        <h2>CSS Tutorials</h2>
+                        <p>Learn styling, layouts, and modern CSS techniques</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="css"></div>
+            </div>
+
+            <!-- JavaScript Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <div>
+                        <h2>JavaScript Tutorials</h2>
+                        <p>Add interactivity to your web pages</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="javascript"></div>
+            </div>
+
+            <!-- DSA Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div>
+                        <h2>DSA Tutorials</h2>
+                        <p>Data Structures and Algorithms for interviews</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="dsa"></div>
+            </div>
+
+            <!-- DBMS Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                        <h2>DBMS & SQL Tutorials</h2>
+                        <p>Database concepts and SQL queries</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="dbms"></div>
+            </div>
+
+            <!-- Python & Java Section -->
+            <div class="learn-section reveal">
+                <div class="learn-section-header">
+                    <div class="learn-section-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div>
+                        <h2>Python & Java</h2>
+                        <p>Popular programming languages for development</p>
+                    </div>
+                </div>
+                <div class="grid grid-3" data-category="python"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="nav-logo mb-4">
+                        <div class="nav-logo-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="nav-logo-text">CodeLinkers</span>
+                    </a>
+                    <p class="text-muted" style="max-width: 300px; margin-top: 16px;">
+                        The ultimate gamified platform for learning HTML, CSS, and more.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Platform</h4>
+                    <ul class="footer-links">
+                        <li><a href="games.html">Coding Games</a></li>
+                        <li><a href="notes.html">Study Notes</a></li>
+                        <li><a href="learn.html">Learn Coding</a></li>
+                        <li><a href="leaderboard.html">Leaderboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="notes.html">BCA Notes</a></li>
+                        <li><a href="notes.html">MCA Notes</a></li>
+                        <li><a href="notes.html">Placement Prep</a></li>
+                        <li><a href="notes.html">Interview Q&A</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Connect</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CodeLinkers. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Button -->
+    <a href="chatbot.html" class="chatbot-btn">
+        <i class="fas fa-robot"></i>
+    </a>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('loginModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Welcome Back!</h2>
+            <p class="modal-subtitle">Log in to continue learning</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('signupModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Create Account</h2>
+            <p class="modal-subtitle">Start your coding journey today</p>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-input" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="learn.js"></script>
+
+    <style>
+        /* Learn Section Styles */
+        .learn-section {
+            margin-bottom: 60px;
+        }
+
+        .learn-section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .learn-section-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .learn-section-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .learn-section-header p {
+            font-size: 0.95rem;
+        }
+
+        body.dark .learn-section-header p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .learn-section-header p {
+            color: var(--text-light-muted);
+        }
+
+        /* Video Card */
+        .video-card {
+            text-decoration: none;
+            display: block;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .video-thumbnail {
+            height: 160px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-thumbnail i {
+            font-size: 3rem;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            transition: color var(--transition-fast);
+        }
+
+        .video-card:hover .video-info h3 {
+            color: var(--primary);
+        }
+
+        .video-info > p {
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        body.dark .video-info > p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .video-info > p {
+            color: var(--text-light-muted);
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+        }
+
+        body.dark .video-meta {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .video-meta {
+            color: var(--text-light-muted);
+        }
+
+        .video-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .learn-section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+<script>window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',500);});</script>
+</body>
+</html>

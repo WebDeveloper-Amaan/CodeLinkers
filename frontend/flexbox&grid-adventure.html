@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeLinkers - Flexbox & Grid Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="flexbox-grid.css">
+</head>
+<body>
+     <!-- Background -->
+    <div class="magic-bg">
+        <div class="bg-image"></div>
+        <div class="bg-overlay"></div>
+        <div class="bg-grid"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Entering Hogwarts...</div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo"><i class="fas fa-hat-wizard"></i></div>
+            <span class="nav-title">CodeLinkers</span>
+        </a>
+
+        <div class="nav-stats">
+            <div class="stat-badge xp">
+                <i class="fas fa-bolt"></i>
+                <span id="totalXP">0</span> XP
+            </div>
+            <div class="stat-badge streak">
+                <i class="fas fa-fire"></i>
+                <span id="winStreak">0</span>
+            </div>
+            <div class="stat-badge level">
+                <i class="fas fa-hat-wizard"></i>
+                Level <span id="playerLevel">1</span>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openShortcutsModal()">
+                <i class="fas fa-keyboard"></i>
+                Shortcuts
+            </button>
+            <button class="btn btn-ghost btn-icon" onclick="openLevelsModal()" title="Level Map">
+                <i class="fas fa-map"></i>
+            </button>
+            <button class="btn btn-ghost" onclick="window.location.href='games.html'">
+                <i class="fas fa-arrow-left"></i>
+                Exit
+            </button>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div style="position: fixed; top: 60px; left: 0; right: 0; z-index: 999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); padding: 12px 40px; border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+        <div style="display: flex; align-items: center; gap: 15px; max-width: 1400px; margin: 0 auto;">
+            <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px; font-weight: 500; min-width: 100px;">
+                <i class="fas fa-tasks"></i> Progress: <span id="progressText">0/0</span>
+            </span>
+            <div style="flex: 1; height: 8px; background: rgba(30, 41, 59, 0.8); border-radius: 10px; overflow: hidden; border: 1px solid rgba(99, 102, 241, 0.2);">
+                <div id="progressBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #ec4899); transition: width 0.5s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>
+            </div>
+            <span style="color: rgba(255, 255, 255, 0.5); font-size: 13px; min-width: 50px; text-align: right;" id="progressPercent">0%</span>
+        </div>
+    </div>
+
+    <!-- Main Game Layout -->
+    <main class="game-layout">
+        <!-- Left Panel -->
+        <section class="left-panel">
+            <div class="quest-section">
+                <div class="level-header">
+                    <div class="level-badges">
+                        <span class="badge badge-flexbox" id="topicBadge">Flexbox</span>
+                        <span class="badge badge-beginner" id="difficultyBadge">Beginner</span>
+                    </div>
+                    <span class="chapter-num" id="chapterNum">Chapter 1</span>
+                </div>
+
+                <h1 class="quest-title" id="questTitle">The Sorting Ceremony</h1>
+                <div class="quest-xp">
+                    <i class="fas fa-bolt"></i>
+                    <span id="questXP">+50 XP</span>
+                </div>
+
+                <div class="story-box">
+                    <p class="story-text" id="storyText">Welcome to Hogwarts! The Great Hall awaits...</p>
+                </div>
+
+                <div class="dialogues" id="dialoguesContainer"></div>
+
+                <div class="mission-box">
+                    <div class="mission-label">
+                        <i class="fas fa-scroll"></i>
+                        Your Mission
+                    </div>
+                    <p class="mission-goal" id="missionGoal">Center the students in the Great Hall</p>
+                    <p class="mission-hint" id="missionHint">Use Flexbox to position the wizards</p>
+                </div>
+
+                <div class="tip-box">
+                    <div class="tip-label">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        CSS Spell
+                    </div>
+                    <p class="tip-content" id="tipContent">Use <code>display: flex</code> and <code>justify-content: center</code>!</p>
+                </div>
+            </div>
+
+            <!-- Editor Section -->
+            <div class="editor-section">
+                <div class="editor-header">
+                    <div class="editor-title">
+                        <i class="fas fa-code"></i>
+                        CSS Editor
+                    </div>
+                    <div class="editor-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="resetCode()">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="code-area">
+                    <div class="line-numbers" id="lineNumbers">1</div>
+                    <textarea class="css-editor" id="cssEditor" spellcheck="false" placeholder="/* Write your CSS */"></textarea>
+                </div>
+
+                <div class="validation-bar" id="validationBar"></div>
+
+                <div class="submit-footer">
+                    <button class="btn btn-primary" onclick="runCode()">
+                        <i class="fas fa-play"></i>
+                        Run
+                    </button>
+                    <button class="btn btn-success" onclick="submitSolution()">
+                        <i class="fas fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel -->
+        <section class="right-panel">
+            <div class="battlefield-header">
+                <div class="battlefield-title">
+                    <i class="fas fa-chess-board"></i>
+                    The Great Hall
+                </div>
+                <div class="view-tabs">
+                    <button class="view-tab active" onclick="switchView('live')">Live</button>
+                    <button class="view-tab" onclick="switchView('goal')">Goal</button>
+                </div>
+            </div>
+
+            <div class="battlefield-scene" id="liveView">
+                <div class="scene-container">
+                    <span class="scene-label">Your Layout</span>
+                    <div class="flex-container" id="flexContainer"></div>
+                </div>
+            </div>
+
+            <div class="battlefield-scene" id="goalView" style="display: none;">
+                <div class="scene-container" style="border-top-color: rgba(16, 185, 129, 0.3);">
+                    <span class="scene-label" style="background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">Target Layout</span>
+                    <div class="flex-container" id="goalContainer"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Victory Modal -->
+    <div class="modal-overlay" id="victoryModal">
+        <div class="modal">
+            <div class="modal-icon success"><i class="fas fa-trophy"></i></div>
+            <h2 class="modal-title success">Spell Mastered!</h2>
+            <p class="modal-message" id="victoryMessage">You've mastered this CSS spell!</p>
+            <div class="modal-stats">
+                <div>
+                    <div class="modal-stat-value" id="earnedXP">+50</div>
+                    <div class="modal-stat-label">XP Earned</div>
+                </div>
+                <div>
+                    <div class="modal-stat-value" id="streakCount">1</div>
+                    <div class="modal-stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('victoryModal')">Review</button>
+                <button class="btn btn-primary" onclick="nextLevel()">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Defeat Modal -->
+    <div class="modal-overlay" id="defeatModal">
+        <div class="modal">
+            <div class="modal-icon error"><i class="fas fa-times"></i></div>
+            <h2 class="modal-title error">Spell Failed!</h2>
+            <p class="modal-message">Check your CSS and try again!</p>
+            <div class="hint-box-modal">
+                <div class="hint-box-title"><i class="fas fa-lightbulb"></i> Hint</div>
+                <p class="hint-box-text" id="defeatHint">Check the required properties.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="showSolution()"><i class="fas fa-eye"></i> Solution</button>
+                <button class="btn btn-primary" onclick="closeModal('defeatModal')"><i class="fas fa-redo"></i> Retry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcutsModal" onclick="closeShortcutsModal()">
+        <div class="modal shortcuts-modal" onclick="event.stopPropagation()">
+            <h2 class="shortcuts-title"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h2>
+            <div class="shortcut-item">
+                <span>Run Code</span>
+                <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Enter</kbd></div>
+            </div>
+            <div class="shortcut-item">
+                <span>Submit</span>
+                <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>S</kbd></div>
+            </div>
+            <div class="shortcut-item">
+                <span>Reset</span>
+                <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>R</kbd></div>
+            </div>
+            <div class="shortcut-item">
+                <span>Level Map</span>
+                <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>M</kbd></div>
+            </div>
+            <div class="shortcut-item">
+                <span>Close</span>
+                <div class="shortcut-keys"><kbd>Esc</kbd></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Levels Modal -->
+    <div class="modal-overlay" id="levelsModal" onclick="closeLevelsModal()">
+        <div class="modal levels-modal" onclick="event.stopPropagation()">
+            <div class="levels-header">
+                <h2 class="levels-title"><i class="fas fa-map"></i> Level Map</h2>
+                <button class="close-btn" onclick="closeLevelsModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="levels-body">
+                <div class="levels-category">
+                    <h3 class="category-title flexbox"><i class="fas fa-arrows-alt"></i> Flexbox Spells</h3>
+                    <div class="levels-grid" id="flexboxLevels"></div>
+                </div>
+                <div class="levels-category">
+                    <h3 class="category-title grid"><i class="fas fa-th"></i> Grid Enchantments</h3>
+                    <div class="levels-grid" id="gridLevels"></div>
+                </div>
+
+                <!-- Add Level Form -->
+                <div class="add-level-section">
+                    <h3 class="add-level-title"><i class="fas fa-plus-circle"></i> Create New Level</h3>
+                    <form class="add-level-form" id="addLevelForm" onsubmit="addNewLevel(event)">
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-input" id="newLevelTitle" placeholder="The Chamber..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Topic</label>
+                            <select class="form-select" id="newLevelTopic" required>
+                                <option value="Flexbox">Flexbox</option>
+                                <option value="Grid">Grid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Difficulty</label>
+                            <select class="form-select" id="newLevelDifficulty" required>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">XP</label>
+                            <input type="number" class="form-input" id="newLevelPoints" value="50" min="10" max="200" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Story</label>
+                            <textarea class="form-textarea" id="newLevelStory" placeholder="The story..." required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Mission Goal</label>
+                            <input type="text" class="form-input" id="newLevelGoal" placeholder="Arrange the..." required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Initial CSS</label>
+                            <textarea class="form-textarea" id="newLevelCSS" placeholder=".flex-container { }" required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Required Properties (comma separated)</label>
+                            <input type="text" class="form-input" id="newLevelProps" placeholder="display: flex, justify-content: center" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Characters (type:emoji:label, ...)</label>
+                            <input type="text" class="form-input" id="newLevelChars" placeholder="harry:⚡:Harry, hermione:📚:Hermione" required>
+                        </div>
+                        <div class="add-level-actions">
+                            <button type="button" class="btn btn-ghost" onclick="clearAddLevelForm()">Clear</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+    <script src="api.js"></script>
+    <script src="flexbox-grid-db.js"></script>
+</body>
+</html>
+

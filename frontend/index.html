@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeLinkers - Learn Coding Through Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+    <!-- Background Gradients -->
+    <div class="bg-gradient-blur bg-gradient-1"></div>
+    <div class="bg-gradient-blur bg-gradient-2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <span class="nav-logo-text">CodeLinkers</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="games.html" class="nav-link">Games</a>
+            <a href="notes.html" class="nav-link">Notes</a>
+            <a href="learn.html" class="nav-link">Learn Coding</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="theme-toggle" onclick="ThemeManager.toggle()">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="ModalManager.open('loginModal')">Log In</button>
+            <button class="btn btn-primary btn-sm" onclick="ModalManager.open('signupModal')">Sign Up</button>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Learn by Playing</span>
+                    </div>
+                    <h1 class="hero-title">
+                        Master <span class="text-gradient">HTML & CSS</span><br>
+                        Through Interactive Games
+                    </h1>
+                    <p class="hero-subtitle">
+                        The ultimate gamified learning platform for beginners. Solve coding challenges, 
+                        earn points, climb leaderboards, and become a web development pro!
+                    </p>
+                    <div class="hero-cta">
+                        <a href="games.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play"></i>
+                            Start Playing
+                        </a>
+                        <a href="#how-it-works" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-info-circle"></i>
+                            How It Works
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="hero-stat-number" data-count="5000">0</span>
+                            <span class="hero-stat-label">Active Learners</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number" data-count="500">0</span>
+                            <span class="hero-stat-label">Challenges</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number" data-count="50">0</span>
+                            <span class="hero-stat-label">Topics</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="code-preview">
+                        <div class="code-preview-header">
+                            <div class="code-preview-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="code-preview-title">challenge.css</span>
+                        </div>
+                        <div class="code-preview-body">
+                            <pre><code><span class="code-selector">.box</span> {
+    <span class="code-property">display</span>: <span class="code-value">flex</span>;
+    <span class="code-property">justify-content</span>: <span class="code-value">center</span>;
+    <span class="code-property">align-items</span>: <span class="code-value">center</span>;
+    <span class="code-property">background</span>: <span class="code-value">linear-gradient(...)</span>;
+    <span class="code-property">border-radius</span>: <span class="code-value">16px</span>;
+}</code></pre>
+                        </div>
+                        <div class="code-preview-badge">+10 Points</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: rgba(99, 102, 241, 0.15); color: #6366f1;">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>Interactive Games</h3>
+                    <p>Learn HTML & CSS through fun, game-based challenges. Write real code and see instant results.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>3 Difficulty Levels</h3>
+                    <p>Beginner, Pro, and Ultra Pro levels with increasing challenges and rewards.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Leaderboards</h3>
+                    <p>Compete with others, earn points, and climb the weekly & monthly rankings.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Study Notes</h3>
+                    <p>Access quality notes for BCA, MCA, placements, and interview preparation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-route"></i>
+                    Getting Started
+                </div>
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Start your coding journey in just 4 simple steps</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card reveal">
+                    <div class="step-number">1</div>
+                    <h3>Create Account</h3>
+                    <p>Sign up for free and set up your learner profile</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-card reveal">
+                    <div class="step-number">2</div>
+                    <h3>Choose Level</h3>
+                    <p>Select your difficulty - Beginner, Pro, or Ultra Pro</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-card reveal">
+                    <div class="step-number">3</div>
+                    <h3>Solve Challenges</h3>
+                    <p>Write code, see live preview, and submit your answers</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-card reveal">
+                    <div class="step-number">4</div>
+                    <h3>Earn Points</h3>
+                    <p>Get points for correct answers and climb the leaderboard</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Preview Section -->
+    <section class="section games-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-gamepad"></i>
+                    Play & Learn
+                </div>
+                <h2 class="section-title">Coding Games</h2>
+                <p class="section-subtitle">Choose your topic and start learning through interactive challenges</p>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="card game-card reveal">
+                    <div class="game-card-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">
+                        <i class="fab fa-html5"></i>
+                    </div>
+                    <h3>HTML Games</h3>
+                    <p>Master HTML structure, tags, forms, and semantic markup through interactive challenges.</p>
+                    <div class="game-card-badges">
+                        <span class="badge badge-beginner">Beginner +5</span>
+                        <span class="badge badge-medium">Pro +10</span>
+                        <span class="badge badge-advanced">Ultra +20</span>
+                    </div>
+                    <a href="games.html" class="btn btn-primary w-full mt-4">Play Now</a>
+                </div>
+
+                <div class="card game-card reveal">
+                    <div class="game-card-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <i class="fab fa-css3-alt"></i>
+                    </div>
+                    <h3>CSS Games</h3>
+                    <p>Learn styling, Flexbox, Grid, animations, and responsive design with real challenges.</p>
+                    <div class="game-card-badges">
+                        <span class="badge badge-beginner">Beginner +5</span>
+                        <span class="badge badge-medium">Pro +10</span>
+                        <span class="badge badge-advanced">Ultra +20</span>
+                    </div>
+                    <a href="games.html" class="btn btn-primary w-full mt-4">Play Now</a>
+                </div>
+
+                <div class="card game-card reveal" style="opacity: 0.6;">
+                    <div class="game-card-icon" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <h3>JavaScript</h3>
+                    <p>Variables, functions, DOM manipulation, events and more coming soon!</p>
+                    <div class="game-card-badges">
+                        <span class="badge badge-coming">Coming Soon</span>
+                    </div>
+                    <button class="btn btn-secondary w-full mt-4" disabled>Coming Soon</button>
+                </div>
+            </div>
+
+            <div class="text-center mt-8 reveal">
+                <a href="games.html" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-right"></i>
+                    View All Games
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Use Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-star"></i>
+                    Benefits
+                </div>
+                <h2 class="section-title">Why Choose CodeLinkers?</h2>
+                <p class="section-subtitle">Built for beginners, loved by thousands</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card reveal">
+                    <div class="flex gap-4">
+                        <div class="feature-icon-sm">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <h3>Visual Learning</h3>
+                            <p>See your code come to life in real-time. Understand how CSS affects HTML instantly with live preview.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card reveal">
+                    <div class="flex gap-4">
+                        <div class="feature-icon-sm">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3>Beginner Friendly</h3>
+                            <p>Perfect for school students and college freshers. No prior coding experience required to start.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card reveal">
+                    <div class="flex gap-4">
+                        <div class="feature-icon-sm">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3>Track Progress</h3>
+                            <p>Monitor your learning journey with detailed progress tracking and performance analytics.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card reveal">
+                    <div class="flex gap-4">
+                        <div class="feature-icon-sm">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div>
+                            <h3>Career Ready</h3>
+                            <p>Prepare for placements and interviews with our specialized content and resources.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section" id="ctaSection">
+        <div class="container">
+            <div class="cta-card reveal">
+                <h2>Ready to Start Your Coding Journey?</h2>
+                <p>Join thousands of learners mastering web development through our gamified platform. It's free!</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary btn-lg" onclick="ModalManager.open('signupModal')">
+                        <i class="fas fa-rocket"></i>
+                        Create Free Account
+                    </button>
+                    <a href="games.html" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-play"></i>
+                        Try Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="nav-logo mb-4">
+                        <div class="nav-logo-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="nav-logo-text">CodeLinkers</span>
+                    </a>
+                    <p class="text-muted" style="max-width: 300px; margin-top: 16px;">
+                        The ultimate gamified platform for learning HTML, CSS, and more. Built for beginners, by developers who care.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Platform</h4>
+                    <ul class="footer-links">
+                        <li><a href="games.html">Coding Games</a></li>
+                        <li><a href="notes.html">Study Notes</a></li>
+                        <li><a href="learn.html">Learn Coding</a></li>
+                        <li><a href="leaderboard.html">Leaderboard</a></li>
+                        <li><a href="#" onclick="handleAdminAccess(event)">Admin Panel</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="notes.html">BCA Notes</a></li>
+                        <li><a href="notes.html">MCA Notes</a></li>
+                        <li><a href="notes.html">Placement Prep</a></li>
+                        <li><a href="notes.html">Interview Q&A</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">Connect</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CodeLinkers. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Button -->
+    <a href="chatbot.html" class="chatbot-btn">
+        <i class="fas fa-robot"></i>
+    </a>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('loginModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Welcome Back!</h2>
+            <p class="modal-subtitle">Log in to continue your learning journey</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Log In
+                </button>
+            </form>
+            <p class="text-center mt-4 text-muted">
+                Don't have an account? 
+                <a href="#" onclick="ModalManager.close('loginModal'); ModalManager.open('signupModal');" style="color: var(--primary);">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('signupModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Create Account</h2>
+            <p class="modal-subtitle">Start your coding journey today</p>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-input" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-rocket"></i>
+                    Create Account
+                </button>
+            </form>
+            <p class="text-center mt-4 text-muted">
+                Already have an account? 
+                <a href="#" onclick="ModalManager.close('signupModal'); ModalManager.open('loginModal');" style="color: var(--primary);">Log In</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="adminLoginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="ModalManager.close('adminLoginModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="admin-modal-header">
+                <div class="admin-modal-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="modal-title">Admin Login</h2>
+                <p class="modal-subtitle">Access the admin dashboard</p>
+            </div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label class="form-label">Admin Email</label>
+                    <input type="email" name="adminEmail" class="form-input" placeholder="admin@CodeLinkers.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Admin Password</label>
+                    <input type="password" name="adminPassword" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Access Dashboard
+                </button>
+            </form>
+            <p class="text-center mt-4 text-muted" style="font-size: 0.85rem;">
+                <i class="fas fa-info-circle"></i> For demo, use: admin@CodeLinkers.com / admin123
+            </p>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Load dynamic stats
+        async function loadStats() {
+            try {
+                const [questions, users] = await Promise.all([
+                    API.Questions.getAll(),
+                    fetch(`${API.BASE_URL}/users/leaderboard`).then(r => r.json())
+                ]);
+                document.querySelector('[data-count="5000"]').setAttribute('data-count', users.data?.length || 0);
+                document.querySelector('[data-count="500"]').setAttribute('data-count', questions.data?.length || 0);
+            } catch (e) {}
+        }
+        loadStats();
+    </script>
+      <script>
+        // Hide CTA section if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const ctaSection = document.getElementById('ctaSection');
+                if (ctaSection) ctaSection.style.display = 'none';
+            }
+        });
+        
+        // Check if admin is already logged in
+        function handleAdminAccess(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    if (user.role === 'admin') {
+                        // Already logged in as admin, go directly
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+                } catch (e) {}
+            }
+            
+            // Not logged in as admin, show login modal
+            ModalManager.open('adminLoginModal');
+        }
+        
+        // Admin Login Handler
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const email = formData.get('adminEmail');
+            const password = formData.get('adminPassword');
+            
+            try {
+                const response = await API.Auth.login({ email, password });
+                const { token, user } = response.data || response;
+                
+                // Check if user is admin
+                if (user.role !== 'admin') {
+                    alert('Access denied. Admin privileges required.');
+                    return;
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                // Redirect to admin panel
+                window.location.href = 'admin.html';
+            } catch (error) {
+                alert('Invalid credentials. Please try again.');
+            }
+        });
+    </script>
+
+    <style>
+         /* Admin Login Link in Footer */
+        .admin-login-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all var(--transition-fast);
+        }
+        body.dark .admin-login-link {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-dark-muted);
+        }
+        body.light .admin-login-link {
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--text-light-muted);
+        }
+        .admin-login-link:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+        }
+        /* Admin Modal Header */
+        .admin-modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .admin-modal-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: white;
+            margin: 0 auto 20px;
+        }
+
+
+        /* Hero Section Styles */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        body.dark .hero-badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+        }
+
+        body.light .hero-badge {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 540px;
+        }
+
+        body.dark .hero-subtitle {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .hero-subtitle {
+            color: var(--text-light-muted);
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+        }
+
+        .hero-stat-number {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+        }
+
+        body.dark .hero-stat-label {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .hero-stat-label {
+            color: var(--text-light-muted);
+        }
+
+        /* Code Preview */
+        .code-preview {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.dark .code-preview {
+            background: rgba(15, 15, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        body.light .code-preview {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .code-preview-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body.light .code-preview-header {
+            border-bottom-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .code-preview-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-preview-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-preview-dots span:nth-child(1) { background: #ef4444; }
+        .code-preview-dots span:nth-child(2) { background: #f59e0b; }
+        .code-preview-dots span:nth-child(3) { background: #10b981; }
+
+        .code-preview-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        body.dark .code-preview-title {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .code-preview-title {
+            color: var(--text-light-muted);
+        }
+
+        .code-preview-body {
+            padding: 24px;
+        }
+
+        .code-preview-body pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .code-selector { color: #10b981; }
+        .code-property { color: #6366f1; }
+        .code-value { color: #f59e0b; }
+
+        .code-preview-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+
+        body.dark .feature-card {
+            background: var(--bg-dark-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body.light .feature-card {
+            background: var(--bg-light-card);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+        }
+
+        body.dark .feature-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin: 0 auto 20px;
+        }
+
+        .feature-icon-sm {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        body.dark .feature-card p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .feature-card p {
+            color: var(--text-light-muted);
+        }
+
+        /* Steps */
+        .steps-grid {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 32px;
+            flex: 1;
+            max-width: 250px;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .step-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 0.9rem;
+        }
+
+        body.dark .step-card p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .step-card p {
+            color: var(--text-light-muted);
+        }
+
+        .step-connector {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin-top: 60px;
+        }
+
+        /* Game Cards */
+        .game-card-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .game-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 12px;
+        }
+
+        .game-card p {
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        body.dark .game-card p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .game-card p {
+            color: var(--text-light-muted);
+        }
+
+        .game-card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* CTA Section */
+        .cta-card {
+            text-align: center;
+            padding: 80px 40px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .cta-card h2 {
+            font-size: clamp(1.75rem, 3vw, 2.5rem);
+            margin-bottom: 16px;
+        }
+
+        .cta-card p {
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        body.dark .cta-card p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .cta-card p {
+            color: var(--text-light-muted);
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-cta {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                flex-wrap: wrap;
+            }
+
+            .step-connector {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+<script>window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',500);});</script>
+</body>
+</html>

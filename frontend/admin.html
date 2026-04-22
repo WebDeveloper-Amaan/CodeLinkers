@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CodeLinkers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="dark">
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading the Admin Dashboard...</div>
+    </div>
+
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+
+            <div class="sidebar-header">
+                <a href="index.html" class="nav-logo">
+                    <div class="nav-logo-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <span class="nav-logo-text">CodeLinkers</span>
+                </a>
+                <!-- <span class="admin-badge">Admin</span> -->
+                 <i class="fa-solid fa-user-lock"></i>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Main</span>
+                    <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-section-title">Content Management</span>
+                    <a href="#games" class="sidebar-link" data-section="games">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Games & Questions</span>
+                    </a>
+                    <a href="#notes" class="sidebar-link" data-section="notes">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Notes</span>
+                    </a>
+                    <a href="#videos" class="sidebar-link" data-section="videos">
+                        <i class="fab fa-youtube"></i>
+                        <span>Learning Videos</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-section-title">User Management</span>
+                    <a href="#users" class="sidebar-link" data-section="users">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#leaderboard" class="sidebar-link" data-section="leaderboard">
+                        <i class="fas fa-trophy"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-section-title">System</span>
+                    <a href="#settings" class="sidebar-link" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#logs" class="sidebar-link" data-section="logs">
+                        <i class="fas fa-history"></i>
+                        <span>Activity Logs</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-profile">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin">
+                    <div>
+                        <span class="admin-name">Admin User</span>
+                        <span class="admin-role">Super Admin</span>
+                    </div>
+                </div>
+                <a href="#" onclick="logoutAdmin(); return false;" class="btn btn-ghost btn-sm w-full mt-4">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <header class="admin-topbar">
+                <button class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="topbar-actions">
+                    <button class="theme-toggle" onclick="ThemeManager.toggle()">
+                        <i class="fas fa-moon"></i>
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="topbar-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <a href="index.html" class="topbar-btn">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </header>
+            <!-- Dashboard Section -->
+            <section class="admin-section active" id="dashboard">
+                <div class="section-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>Welcome back, Admin! Here's what's happening.</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i>
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--primary);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">5,234</span>
+                            <span class="stat-label">Total Users</span>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% this month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">156</span>
+                            <span class="stat-label">Total Questions</span>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 8 new this week</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">42,890</span>
+                            <span class="stat-label">Problems Solved</span>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 24% increase</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                            <i class="fas fa-file-download"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">8,456</span>
+                            <span class="stat-label">Notes Downloads</span>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 18% increase</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>User Activity</h3>
+                            <select class="chart-filter">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-placeholder">
+                            <div class="chart-bars">
+                                <div class="chart-bar" style="height: 60%;"><span>Mon</span></div>
+                                <div class="chart-bar" style="height: 80%;"><span>Tue</span></div>
+                                <div class="chart-bar" style="height: 45%;"><span>Wed</span></div>
+                                <div class="chart-bar" style="height: 90%;"><span>Thu</span></div>
+                                <div class="chart-bar" style="height: 70%;"><span>Fri</span></div>
+                                <div class="chart-bar" style="height: 55%;"><span>Sat</span></div>
+                                <div class="chart-bar" style="height: 85%;"><span>Sun</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Topic Distribution</h3>
+                        </div>
+                        <div class="chart-placeholder">
+                            <div class="donut-chart">
+                                <div class="donut-segment html"></div>
+                                <div class="donut-segment css"></div>
+                                <div class="donut-hole"></div>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item"><span class="legend-color html"></span> HTML (45%)</div>
+                                <div class="legend-item"><span class="legend-color css"></span> CSS (55%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recent Activity -->
+                <div class="activity-grid">
+                    <div class="activity-card">
+                        <div class="card-header">
+                            <h3>Recent Users</h3>
+                            <a href="#users" class="view-all">View All</a>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="">
+                                <div class="activity-info">
+                                    <span class="activity-name">John Doe</span>
+                                    <span class="activity-detail">Joined 2 hours ago</span>
+                                </div>
+                                <span class="badge badge-beginner">Beginner</span>
+                            </div>
+                            <div class="activity-item">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="">
+                                <div class="activity-info">
+                                    <span class="activity-name">Sarah Smith</span>
+                                    <span class="activity-detail">Joined 5 hours ago</span>
+                                </div>
+                                <span class="badge badge-medium">Pro</span>
+                            </div>
+                            <div class="activity-item">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" alt="">
+                                <div class="activity-info">
+                                    <span class="activity-name">Mike Johnson</span>
+                                    <span class="activity-detail">Joined 1 day ago</span>
+                                </div>
+                                <span class="badge badge-beginner">Beginner</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-card">
+                        <div class="card-header">
+                            <h3>Recent Submissions</h3>
+                            <a href="#games" class="view-all">View All</a>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="submission-icon success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <span class="activity-name">CSS Flexbox Challenge</span>
+                                    <span class="activity-detail">by CodeNinja_Pro • 10 mins ago</span>
+                                </div>
+                                <span class="points-badge">+10</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="submission-icon success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <span class="activity-name">HTML Forms Basics</span>
+                                    <span class="activity-detail">by WebDevQueen • 25 mins ago</span>
+                                </div>
+                                <span class="points-badge">+5</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="submission-icon failed">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <span class="activity-name">CSS Grid Advanced</span>
+                                    <span class="activity-detail">by NewLearner • 1 hour ago</span>
+                                </div>
+                                <span class="points-badge failed">+0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Games Management Section -->
+            <section class="admin-section" id="games">
+                <div class="section-header">
+                    <div>
+                        <h1>Games & Questions Management</h1>
+                        <p>Create, edit, and manage coding challenges</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="window.location.href='add-flexgrid-question.html'" style="margin-right: 8px;">
+                            <i class="fas fa-magic"></i>
+                            Add Flexbox/Grid Question
+                        </button>
+                        <button class="btn btn-primary" onclick="window.location.href='add-question.html'">
+                            <i class="fas fa-plus"></i>
+                            Add New Question
+                        </button>
+                    </div>
+                </div>
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label>Topic</label>
+                        <select class="filter-select">
+                            <option value="">All Topics</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Difficulty</label>
+                        <select class="filter-select">
+                            <option value="">All Levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="medium">Pro (Medium)</option>
+                            <option value="advanced">Ultra Pro</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="disabled">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="filter-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search questions...">
+                    </div>
+                </div>
+                <!-- Questions Table -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="select-all"></th>
+                                <th>Question</th>
+                                <th>Topic</th>
+                                <th>Difficulty</th>
+                                <th>Points</th>
+                                <th>Submissions</th>
+                                <th>Success Rate</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="question-cell">
+                                        <span class="question-title">Center a Div with Flexbox</span>
+                                        <span class="question-id">#CSS-001</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge css">CSS</span></td>
+                                <td><span class="badge badge-beginner">Beginner</span></td>
+                                <td>5</td>
+                                <td>1,245</td>
+                                <td><span class="success-rate high">89%</span></td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Preview"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="question-cell">
+                                        <span class="question-title">Create a Responsive Grid</span>
+                                        <span class="question-id">#CSS-015</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge css">CSS</span></td>
+                                <td><span class="badge badge-medium">Pro</span></td>
+                                <td>10</td>
+                                <td>856</td>
+                                <td><span class="success-rate medium">65%</span></td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Preview"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="question-cell">
+                                        <span class="question-title">HTML Form with Validation</span>
+                                        <span class="question-id">#HTML-008</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge html">HTML</span></td>
+                                <td><span class="badge badge-medium">Pro</span></td>
+                                <td>10</td>
+                                <td>654</td>
+                                <td><span class="success-rate medium">72%</span></td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Preview"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="question-cell">
+                                        <span class="question-title">CSS Animation Keyframes</span>
+                                        <span class="question-id">#CSS-042</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge css">CSS</span></td>
+                                <td><span class="badge badge-advanced">Ultra Pro</span></td>
+                                <td>20</td>
+                                <td>234</td>
+                                <td><span class="success-rate low">45%</span></td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Preview"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="question-cell">
+                                        <span class="question-title">Semantic HTML Structure</span>
+                                        <span class="question-id">#HTML-022</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge html">HTML</span></td>
+                                <td><span class="badge badge-advanced">Ultra Pro</span></td>
+                                <td>20</td>
+                                <td>189</td>
+                                <td><span class="success-rate low">52%</span></td>
+                                <td><span class="status-badge draft">Draft</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Preview"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="pagination">
+                    <span class="pagination-info">Showing 1-5 of 156 questions</span>
+                    <div class="pagination-btns">
+                        <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <span>...</span>
+                        <button class="pagination-btn">32</button>
+                        <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+            <!-- Notes Management Section -->
+            <section class="admin-section" id="notes">
+                <div class="section-header">
+                    <div>
+                        <h1>Notes Management</h1>
+                        <p>Upload and manage study materials</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="openModal('addNoteModal')">
+                            <i class="fas fa-upload"></i>
+                            Upload Notes
+                        </button>
+                    </div>
+                </div>
+                <!-- Notes Stats -->
+                <div class="mini-stats">
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">0</span>
+                        <span class="mini-stat-label">Beginner Basics</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">48</span>
+                        <span class="mini-stat-label">BCA Notes</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">32</span>
+                        <span class="mini-stat-label">MCA Notes</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">56</span>
+                        <span class="mini-stat-label">Placement</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">78</span>
+                        <span class="mini-stat-label">Interview Q&A</span>
+                    </div>
+                </div>
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label>Category</label>
+                        <select class="filter-select">
+                            <option value="">All Categories</option>
+                            <option value="beginner">Beginner Basics</option>
+                            <option value="bca">BCA</option>
+                            <option value="mca">MCA</option>
+                            <option value="placement">Placement</option>
+                            <option value="interview">Interview Q&A</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Subject</label>
+                        <select class="filter-select">
+                            <option value="">All Subjects</option>
+                            <option value="programming">Programming</option>
+                            <option value="dbms">DBMS</option>
+                            <option value="networks">Networks</option>
+                            <option value="web">Web Development</option>
+                        </select>
+                    </div>
+                    <div class="filter-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search notes...">
+                    </div>
+                </div>
+                <!-- Notes Grid -->
+                <div class="notes-admin-grid">
+                    <div class="note-admin-card">
+                        <div class="note-admin-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="note-admin-info">
+                            <h4>Data Structures Complete Notes</h4>
+                            <p>BCA Semester 3 • Programming</p>
+                            <div class="note-admin-meta">
+                                <span><i class="fas fa-download"></i> 2,345 downloads</span>
+                                <span><i class="fas fa-calendar"></i> Jan 15, 2025</span>
+                            </div>
+                        </div>
+                        <div class="note-admin-actions">
+                            <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="note-admin-card">
+                        <div class="note-admin-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="note-admin-info">
+                            <h4>DBMS Interview Questions</h4>
+                            <p>Interview Q&A • Database</p>
+                            <div class="note-admin-meta">
+                                <span><i class="fas fa-download"></i> 1,890 downloads</span>
+                                <span><i class="fas fa-calendar"></i> Jan 12, 2025</span>
+                            </div>
+                        </div>
+                        <div class="note-admin-actions">
+                            <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="note-admin-card">
+                        <div class="note-admin-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="note-admin-info">
+                            <h4>Computer Networks</h4>
+                            <p>MCA Semester 2 • Networks</p>
+                            <div class="note-admin-meta">
+                                <span><i class="fas fa-download"></i> 1,234 downloads</span>
+                                <span><i class="fas fa-calendar"></i> Jan 10, 2025</span>
+                            </div>
+                        </div>
+                        <div class="note-admin-actions">
+                            <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="note-admin-card">
+                        <div class="note-admin-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="note-admin-info">
+                            <h4>TCS NQT Preparation Guide</h4>
+                            <p>Placement • Aptitude</p>
+                            <div class="note-admin-meta">
+                                <span><i class="fas fa-download"></i> 3,456 downloads</span>
+                                <span><i class="fas fa-calendar"></i> Jan 8, 2025</span>
+                            </div>
+                        </div>
+                        <div class="note-admin-actions">
+                            <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Videos Management Section -->
+            <section class="admin-section" id="videos">
+                <div class="section-header">
+                    <div>
+                        <h1>Learning Videos Management</h1>
+                        <p>Manage YouTube tutorial links</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="openModal('addVideoModal')">
+                            <i class="fas fa-plus"></i>
+                            Add Video Link
+                        </button>
+                    </div>
+                </div>
+                <!-- Videos Table -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Video Title</th>
+                                <th>Category</th>
+                                <th>Channel</th>
+                                <th>Duration</th>
+                                <th>Added Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="video-cell">
+                                        <div class="video-thumb"><i class="fab fa-youtube"></i></div>
+                                        <span>HTML Full Course for Beginners</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge html">HTML</span></td>
+                                <td>CodeWithHarry</td>
+                                <td>3:10:00</td>
+                                <td>Jan 15, 2025</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Open Link"><i class="fas fa-external-link-alt"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="video-cell">
+                                        <div class="video-thumb"><i class="fab fa-youtube"></i></div>
+                                        <span>CSS Complete Course</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge css">CSS</span></td>
+                                <td>freeCodeCamp</td>
+                                <td>6:30:00</td>
+                                <td>Jan 14, 2025</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Open Link"><i class="fas fa-external-link-alt"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="video-cell">
+                                        <div class="video-thumb"><i class="fab fa-youtube"></i></div>
+                                        <span>JavaScript Full Course</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge js">JavaScript</span></td>
+                                <td>freeCodeCamp</td>
+                                <td>3:26:00</td>
+                                <td>Jan 13, 2025</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Open Link"><i class="fas fa-external-link-alt"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="video-cell">
+                                        <div class="video-thumb"><i class="fab fa-youtube"></i></div>
+                                        <span>DSA Full Course</span>
+                                    </div>
+                                </td>
+                                <td><span class="topic-badge dsa">DSA</span></td>
+                                <td>Apna College</td>
+                                <td>5:22:00</td>
+                                <td>Jan 12, 2025</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn preview" title="Open Link"><i class="fas fa-external-link-alt"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Users Management Section -->
+            <section class="admin-section" id="users">
+                <div class="section-header">
+                    <div>
+                        <h1>Users Management</h1>
+                        <p>View and manage registered users</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i>
+                            Export Users
+                        </button>
+                    </div>
+                </div>
+                <!-- Users Table -->
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Points</th>
+                                <th>Rank</th>
+                                <th>Level</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="">
+                                        <span>CodeNinja_Pro</span>
+                                    </div>
+                                </td>
+                                <td>alex@example.com</td>
+                                <td class="points-cell">2,450</td>
+                                <td>#1</td>
+                                <td><span class="badge badge-advanced">Ultra Pro</span></td>
+                                <td>Dec 15, 2024</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="View Profile"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn" title="Reset Points"><i class="fas fa-redo"></i></button>
+                                        <button class="action-btn delete" title="Ban User"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="">
+                                        <span>WebDevQueen</span>
+                                    </div>
+                                </td>
+                                <td>sarah@example.com</td>
+                                <td class="points-cell">2,180</td>
+                                <td>#2</td>
+                                <td><span class="badge badge-medium">Pro</span></td>
+                                <td>Dec 18, 2024</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="View Profile"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn" title="Reset Points"><i class="fas fa-redo"></i></button>
+                                        <button class="action-btn delete" title="Ban User"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" alt="">
+                                        <span>CSSMaster99</span>
+                                    </div>
+                                </td>
+                                <td>mike@example.com</td>
+                                <td class="points-cell">1,920</td>
+                                <td>#3</td>
+                                <td><span class="badge badge-medium">Pro</span></td>
+                                <td>Dec 20, 2024</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="View Profile"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn" title="Reset Points"><i class="fas fa-redo"></i></button>
+                                        <button class="action-btn delete" title="Ban User"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="">
+                                        <span>HtmlHero</span>
+                                    </div>
+                                </td>
+                                <td>john@example.com</td>
+                                <td class="points-cell">1,650</td>
+                                <td>#4</td>
+                                <td><span class="badge badge-beginner">Beginner</span></td>
+                                <td>Jan 2, 2025</td>
+                                <td><span class="status-badge inactive">Inactive</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit" title="View Profile"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn" title="Reset Points"><i class="fas fa-redo"></i></button>
+                                        <button class="action-btn delete" title="Ban User"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Leaderboard Management Section -->
+            <section class="admin-section" id="leaderboard">
+                <div class="section-header">
+                    <div>
+                        <h1>Leaderboard Management</h1>
+                        <p>Control and reset leaderboard rankings</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-redo"></i>
+                            Reset Monthly
+                        </button>
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i>
+                            Export Rankings
+                        </button>
+                    </div>
+                </div>
+                <div class="leaderboard-controls">
+                    <div class="control-card">
+                        <h3><i class="fas fa-calendar-alt"></i> Monthly Leaderboard</h3>
+                        <p>Current month: January 2025</p>
+                        <p>Reset Date: Feb 1, 2025</p>
+                        <div class="control-actions">
+                            <button class="btn btn-primary btn-sm">View Rankings</button>
+                            <button class="btn btn-ghost btn-sm">Manual Reset</button>
+                        </div>
+                    </div>
+                    <div class="control-card">
+                        <h3><i class="fas fa-calendar-week"></i> Weekly Leaderboard</h3>
+                        <p>Current week: Week 3</p>
+                        <p>Reset Date: Jan 20, 2025</p>
+                        <div class="control-actions">
+                            <button class="btn btn-primary btn-sm">View Rankings</button>
+                            <button class="btn btn-ghost btn-sm">Manual Reset</button>
+                        </div>
+                    </div>
+                    <div class="control-card">
+                        <h3><i class="fas fa-infinity"></i> All-Time Leaderboard</h3>
+                        <p>Total participants: 5,234</p>
+                        <p>Since: Nov 2024</p>
+                        <div class="control-actions">
+                            <button class="btn btn-primary btn-sm">View Rankings</button>
+                            <button class="btn btn-ghost btn-sm">Archive</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Settings Section -->
+            <section class="admin-section" id="settings">
+                <div class="section-header">
+                    <div>
+                        <h1>Settings</h1>
+                        <p>Configure platform settings</p>
+                    </div>
+                </div>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-palette"></i> Appearance</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Default Theme</span>
+                                <span class="setting-desc">Set default theme for new users</span>
+                            </div>
+                            <select class="setting-select">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Allow Theme Toggle</span>
+                                <span class="setting-desc">Let users switch themes</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-gamepad"></i> Game Settings</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Beginner Points</span>
+                                <span class="setting-desc">Points per beginner question</span>
+                            </div>
+                            <input type="number" class="setting-input" value="5">
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Pro Points</span>
+                                <span class="setting-desc">Points per pro question</span>
+                            </div>
+                            <input type="number" class="setting-input" value="10">
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Ultra Pro Points</span>
+                                <span class="setting-desc">Points per advanced question</span>
+                            </div>
+                            <input type="number" class="setting-input" value="20">
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bell"></i> Notifications</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Email Notifications</span>
+                                <span class="setting-desc">Send email for new signups</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Weekly Reports</span>
+                                <span class="setting-desc">Receive weekly activity reports</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-shield-alt"></i> Security</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Require Email Verification</span>
+                                <span class="setting-desc">Users must verify email</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Max Login Attempts</span>
+                                <span class="setting-desc">Before temporary ban</span>
+                            </div>
+                            <input type="number" class="setting-input" value="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Settings
+                    </button>
+                    <button class="btn btn-ghost">
+                        <i class="fas fa-undo"></i>
+                        Reset to Defaults
+                    </button>
+                </div>
+            </section>
+            <!-- Activity Logs Section -->
+            <section class="admin-section" id="logs">
+                <div class="section-header">
+                    <div>
+                        <h1>Activity Logs</h1>
+                        <p>Monitor all platform activities</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i>
+                            Export Logs
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                            Clear Old Logs
+                        </button>
+                    </div>
+                </div>
+                <div class="logs-container">
+                    <div class="log-item">
+                        <div class="log-icon info"><i class="fas fa-user-plus"></i></div>
+                        <div class="log-content">
+                            <span class="log-message"><strong>NewUser123</strong> registered a new account</span>
+                            <span class="log-time">2 minutes ago</span>
+                        </div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-icon success"><i class="fas fa-check-circle"></i></div>
+                        <div class="log-content">
+                            <span class="log-message"><strong>CodeNinja_Pro</strong> solved "CSS Flexbox Challenge" (+10 pts)</span>
+                            <span class="log-time">10 minutes ago</span>
+                        </div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-icon warning"><i class="fas fa-edit"></i></div>
+                        <div class="log-content">
+                            <span class="log-message"><strong>Admin</strong> updated question #CSS-015</span>
+                            <span class="log-time">25 minutes ago</span>
+                        </div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-icon info"><i class="fas fa-upload"></i></div>
+                        <div class="log-content">
+                            <span class="log-message"><strong>Admin</strong> uploaded new notes "DBMS Complete Guide"</span>
+                            <span class="log-time">1 hour ago</span>
+                        </div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-icon danger"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="log-content">
+                            <span class="log-message">Failed login attempt for <strong>unknown@email.com</strong></span>
+                            <span class="log-time">2 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-icon success"><i class="fas fa-download"></i></div>
+                        <div class="log-content">
+                            <span class="log-message"><strong>WebDevQueen</strong> downloaded "BCA Semester 3 Notes"</span>
+                            <span class="log-time">3 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Add Question Modal -->
+    <div class="modal-overlay" id="addQuestionModal">
+        <div class="modal modal-lg">
+            <button class="modal-close" onclick="closeModal('addQuestionModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Add New Question</h2>
+            <p class="modal-subtitle">Create a new coding challenge</p>
+            
+            <form class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Question Title *</label>
+                        <input type="text" class="form-input" placeholder="e.g., Center a Div with Flexbox">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Question ID</label>
+                        <input type="text" class="form-input" placeholder="Auto-generated" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description *</label>
+                    <textarea class="form-textarea" rows="3" placeholder="Describe the challenge..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Topic *</label>
+                        <select class="form-select">
+                            <option value="">Select Topic</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Difficulty *</label>
+                        <select class="form-select">
+                            <option value="">Select Difficulty</option>
+                            <option value="beginner">Beginner (5 pts)</option>
+                            <option value="medium">Pro / Medium (10 pts)</option>
+                            <option value="advanced">Ultra Pro (20 pts)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hints (one per line)</label>
+                    <textarea class="form-textarea" rows="2" placeholder="Use display: flex&#10;Try justify-content property"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Initial HTML Code</label>
+                    <textarea class="form-textarea code-input" rows="4" placeholder="<div class='container'>&#10;  <div class='box'></div>&#10;</div>"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expected CSS Solution *</label>
+                    <textarea class="form-textarea code-input" rows="4" placeholder=".container {&#10;  display: flex;&#10;  justify-content: center;&#10;}" id="expectedCssInput"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Output Preview</label>
+                    <p class="form-hint">Live preview of how the output should look (HTML + CSS combined)</p>
+                    <div class="target-preview-container">
+                        <iframe id="targetPreviewFrame" class="target-preview-frame"></iframe>
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="refreshTargetPreview()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Preview
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="disabled">Disabled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('addQuestionModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Note Modal -->
+    <div class="modal-overlay" id="addNoteModal">
+        <div class="modal modal-lg" style="max-height: 90vh; overflow-y: auto; margin: 20px auto;">
+            <button class="modal-close" onclick="closeModal('addNoteModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fas fa-file-upload" style="font-size: 28px; color: white;"></i>
+                </div>
+                <h2 class="modal-title" style="margin-bottom: 4px; font-size: 24px;">Upload Study Notes</h2>
+                <p class="modal-subtitle" style="font-size: 14px;">Share educational content with students</p>
+            </div>
+            
+            <form class="admin-form" id="addNoteForm" style="max-width: 100%;">
+                <!-- Title -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-heading" style="color: var(--primary);"></i>
+                        Title <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" class="form-input" id="noteTitle" placeholder="e.g., Data Structures Complete Notes" required style="font-size: 15px;">
+                </div>
+
+                <!-- Category & Semester Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                            <i class="fas fa-folder" style="color: #f59e0b;"></i>
+                            Category <span style="color: #ef4444;">*</span>
+                        </label>
+                        <select class="form-select" id="noteCategory" required style="font-size: 15px;">
+                            <option value="">Choose category...</option>
+                            <option value="beginner">🎓 Beginner Basics</option>
+                            <option value="bca">📚 BCA</option>
+                            <option value="mca">🎓 MCA</option>
+                            <option value="placement">💼 Placement Prep</option>
+                            <option value="interview">💡 Interview Q&A</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                            <i class="fas fa-calendar-alt" style="color: #10b981;"></i>
+                            Semester/Section
+                        </label>
+                        <input type="text" class="form-input" id="noteSemester" placeholder="e.g., Semester 3" style="font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-book" style="color: #ec4899;"></i>
+                        Subject
+                    </label>
+                    <input type="text" class="form-input" id="noteSubject" placeholder="e.g., Programming, DBMS, Networks" style="font-size: 15px;">
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-align-left" style="color: #6366f1;"></i>
+                        Description
+                    </label>
+                    <textarea class="form-textarea" rows="3" id="noteDescription" placeholder="Brief description of what's covered in these notes..." style="font-size: 15px; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Google Drive Link -->
+                <div class="form-group" style="background: rgba(99, 102, 241, 0.05); padding: 16px; border-radius: 12px; border: 2px dashed rgba(99, 102, 241, 0.3);">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 10px;">
+                        <i class="fab fa-google-drive" style="color: #4285f4; font-size: 18px;"></i>
+                        Google Drive Link <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="url" class="form-input" id="noteFileUrl" placeholder="https://drive.google.com/uc?export=download&id=..." required style="font-size: 15px; margin-bottom: 10px;">
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                            <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 6px;"></i>
+                            <strong>Quick Guide:</strong> Upload PDF to Google Drive → Share → Get link → Convert to direct download format
+                        </p>
+                        <a href="#" onclick="alert('Format: https://drive.google.com/uc?export=download&id=FILE_ID'); return false;" style="font-size: 12px; color: #3b82f6; text-decoration: none; margin-top: 6px; display: inline-block;">
+                            <i class="fas fa-question-circle"></i> See link format example
+                        </a>
+                    </div>
+                </div>
+
+                <!-- File Count -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-copy" style="color: #8b5cf6;"></i>
+                        Number of Files
+                    </label>
+                    <input type="number" class="form-input" id="noteFileCount" value="1" min="1" max="10" placeholder="1" style="font-size: 15px; width: 150px;">
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 0;">
+                        <i class="fas fa-info-circle"></i> How many PDF files are included
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions" style="margin-top: 24px; gap: 12px;">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('addNoteModal')" style="flex: 1;">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 16px; padding: 14px 32px;">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        Upload Notes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Video Modal -->
+    <div class="modal-overlay" id="addVideoModal">
+        <div class="modal modal-lg" style="max-height: 90vh; overflow-y: auto; margin: 20px auto;">
+            <button class="modal-close" onclick="closeModal('addVideoModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fab fa-youtube" style="font-size: 28px; color: white;"></i>
+                </div>
+                <h2 class="modal-title" style="margin-bottom: 4px; font-size: 24px;">Add Video Tutorial</h2>
+                <p class="modal-subtitle" style="font-size: 14px;">Share YouTube learning resources</p>
+            </div>
+            
+            <form class="admin-form" id="addVideoForm" style="max-width: 100%;">
+                <!-- Title -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-heading" style="color: var(--primary);"></i>
+                        Video Title <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" class="form-input" id="videoTitle" placeholder="e.g., HTML Full Course for Beginners" required style="font-size: 15px;">
+                </div>
+
+                <!-- YouTube URL -->
+                <div class="form-group" style="background: rgba(255, 0, 0, 0.05); padding: 16px; border-radius: 12px; border: 2px dashed rgba(255, 0, 0, 0.3);">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 10px;">
+                        <i class="fab fa-youtube" style="color: #ff0000; font-size: 18px;"></i>
+                        YouTube URL <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="url" class="form-input" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." required style="font-size: 15px; margin-bottom: 10px;">
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #ef4444;">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                            <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 6px;"></i>
+                            <strong>Tip:</strong> Copy the full YouTube video URL from your browser
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Category & Duration Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                            <i class="fas fa-folder" style="color: #f59e0b;"></i>
+                            Category <span style="color: #ef4444;">*</span>
+                        </label>
+                        <select class="form-select" id="videoCategory" required style="font-size: 15px;">
+                            <option value="">Choose category...</option>
+                            <option value="html">🌐 HTML</option>
+                            <option value="css">🎨 CSS</option>
+                            <option value="javascript">⚡ JavaScript</option>
+                            <option value="dsa">📊 DSA</option>
+                            <option value="dbms">💾 DBMS</option>
+                            <option value="python">🐍 Python</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                            <i class="fas fa-clock" style="color: #10b981;"></i>
+                            Duration
+                        </label>
+                        <input type="text" class="form-input" id="videoDuration" placeholder="e.g., 3:10:00" style="font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Channel Name -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-user" style="color: #ec4899;"></i>
+                        Channel Name
+                    </label>
+                    <input type="text" class="form-input" id="videoChannel" placeholder="e.g., freeCodeCamp, CodeWithHarry" style="font-size: 15px;">
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-align-left" style="color: #6366f1;"></i>
+                        Description
+                    </label>
+                    <textarea class="form-textarea" rows="3" id="videoDescription" placeholder="Brief description of what's covered in this video..." style="font-size: 15px; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions" style="margin-top: 24px; gap: 12px;">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('addVideoModal')" style="flex: 1;">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 16px; padding: 14px 32px;">
+                        <i class="fas fa-plus"></i>
+                        Add Video
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+<script>window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',500);});</script>
+</body>
+</html>

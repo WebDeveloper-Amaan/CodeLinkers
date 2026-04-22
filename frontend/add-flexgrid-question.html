@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Flexbox/Grid Question - CodeLinkers Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1e2e; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 15, 25, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(30, 30, 50, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+        
+        .preview-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-container.initial-state {
+            border-color: rgba(234, 179, 8, 0.4);
+        }
+        
+        .preview-container.target-state {
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+        
+        .char-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .char-box.wizard { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        .char-box.dragon { background: linear-gradient(135deg, #ef4444, #f97316); color: white; }
+        .char-box.elf { background: linear-gradient(135deg, #10b981, #34d399); color: white; }
+        .char-box.knight { background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; }
+        .char-box.fairy { background: linear-gradient(135deg, #ec4899, #f472b6); color: white; }
+        
+        .tab-btn { transition: all 0.2s; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .tab-btn.initial.active {
+            background: linear-gradient(135deg, #eab308, #f59e0b);
+        }
+        
+        .tab-btn.target.active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+        
+        .css-editor {
+            position: relative;
+        }
+        
+        .css-editor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: linear-gradient(90deg, #1e1e2e, #2d2d44);
+            border-radius: 12px 12px 0 0;
+            pointer-events: none;
+        }
+        
+        .state-badge {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .state-badge.initial {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fbbf24;
+        }
+        
+        .state-badge.target {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+        
+        .comparison-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 24px;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+        }
+        
+        .preview-active {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        .container-size-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-[#0f0f1a] text-gray-100 min-h-screen">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-indigo-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="admin.html" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-code text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">CodeLinkers Admin</span>
+                </a>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetForm()" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors flex items-center gap-2 text-sm">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button onclick="window.location.href='admin.html'" class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all flex items-center gap-2 text-sm font-medium shadow-lg shadow-indigo-500/25">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 mb-4">
+                    <i class="fas fa-magic text-purple-400"></i>
+                    <span class="text-sm text-purple-300">Flexbox & Grid Adventure</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-bold mb-2">
+                    <span class="gradient-text">Create New Question</span>
+                </h1>
+                <p class="text-gray-400 max-w-2xl mx-auto">Design interactive CSS challenges with full control over initial and target states</p>
+            </div>
+
+            <!-- Main Layout -->
+            <div class="grid xl:grid-cols-5 gap-6">
+                <!-- Left Panel - Form (3 cols) -->
+                <div class="xl:col-span-3 space-y-6">
+                    <!-- Question Details Card -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+                                <i class="fas fa-scroll text-indigo-400"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold">Question Details</h2>
+                                <p class="text-sm text-gray-400">Basic information about the challenge</p>
+                            </div>
+                        </div>
+
+                        <form id="flexGridForm" class="space-y-5">
+                            <div class="grid sm:grid-cols-3 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-heading text-indigo-400 mr-2"></i>Question Title *
+                                    </label>
+                                    <input type="text" id="title" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" placeholder="The Sorting Ceremony" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-star text-yellow-400 mr-2"></i>Points *
+                                    </label>
+                                    <input type="number" id="points" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" value="10" min="5" max="50" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-book-open text-purple-400 mr-2"></i>Story/Description *
+                                </label>
+                                <textarea id="story" rows="3" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none resize-none" placeholder="Welcome to Hogwarts! The Great Hall awaits as new students prepare for the magical sorting ceremony..." required></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-bullseye text-red-400 mr-2"></i>Mission Goal *
+                                </label>
+                                <input type="text" id="missionGoal" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" placeholder="Center the students in the Great Hall using Flexbox" required>
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>Hint 1 *
+                                    </label>
+                                    <input type="text" id="hint1" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" placeholder="Use display: flex on the container" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-lightbulb text-gray-500 mr-2"></i>Hint 2 (Optional)
+                                    </label>
+                                    <input type="text" id="hint2" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" placeholder="Try justify-content and align-items">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- CSS States Control Card -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500/20 to-green-500/20 flex items-center justify-center">
+                                <i class="fas fa-code text-green-400"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold">CSS State Control</h2>
+                                <p class="text-sm text-gray-400">Define initial and target CSS for the challenge</p>
+                            </div>
+                        </div>
+
+                        <!-- CSS Editor Tabs -->
+                        <div class="flex gap-2 mb-4">
+                            <button type="button" onclick="switchCSSTab('initial')" class="css-tab-btn flex-1 py-3 px-4 rounded-xl bg-yellow-500/10 border-2 border-yellow-500/30 text-yellow-400 font-medium transition-all hover:bg-yellow-500/20 flex items-center justify-center gap-2" data-tab="initial">
+                                <i class="fas fa-play-circle"></i>
+                                Initial State CSS
+                            </button>
+                            <button type="button" onclick="switchCSSTab('target')" class="css-tab-btn flex-1 py-3 px-4 rounded-xl bg-green-500/10 border-2 border-green-500/30 text-green-400 font-medium transition-all hover:bg-green-500/20 flex items-center justify-center gap-2" data-tab="target">
+                                <i class="fas fa-flag-checkered"></i>
+                                Target State CSS
+                            </button>
+                        </div>
+
+                        <!-- Initial CSS Editor -->
+                        <div id="initialCSSPanel" class="css-panel">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></span>
+                                    <span class="text-sm font-medium text-yellow-400">Initial State (What user sees first)</span>
+                                </div>
+                                <button type="button" onclick="applyInitialCSS()" class="px-3 py-1.5 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 transition-colors flex items-center gap-2 text-xs">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+                            </div>
+                            <div class="css-editor rounded-xl overflow-hidden">
+                                <div class="absolute top-2 left-3 flex items-center gap-1.5 z-10">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                                </div>
+                                <textarea id="initialCSS" rows="6" class="mono w-full px-4 pt-10 pb-4 bg-[#1e1e2e] border border-yellow-500/30 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all outline-none resize-none text-sm leading-relaxed rounded-xl" placeholder="/* Initial CSS - how boxes appear at start */
+.flex-container {
+    /* Leave empty for default, or add initial styles */
+}"></textarea>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-yellow-500"></i>
+                                This is what users see before they start coding. Leave empty for default layout.
+                            </p>
+                        </div>
+
+                        <!-- Target CSS Editor -->
+                        <div id="targetCSSPanel" class="css-panel hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                                    <span class="text-sm font-medium text-green-400">Target State (Expected solution)</span>
+                                </div>
+                                <button type="button" onclick="applyTargetCSS()" class="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center gap-2 text-xs">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+                            </div>
+                            <div class="css-editor rounded-xl overflow-hidden">
+                                <div class="absolute top-2 left-3 flex items-center gap-1.5 z-10">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                                </div>
+                                <textarea id="targetCSS" rows="6" class="mono w-full px-4 pt-10 pb-4 bg-[#1e1e2e] border border-green-500/30 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all outline-none resize-none text-sm leading-relaxed rounded-xl" placeholder="/* Target CSS - the correct solution */
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}" required></textarea>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-green-500"></i>
+                                This is the expected solution. User's CSS will be validated against this.
+                            </p>
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <div class="mt-6 pt-4 border-t border-gray-700/50">
+                            <label class="block text-sm font-medium text-gray-300 mb-3">
+                                <i class="fas fa-magic text-purple-400 mr-2"></i>Quick CSS Presets (applies to active tab)
+                            </label>
+                            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                <button type="button" onclick="applyPreset('none')" class="px-3 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-gray-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-ban"></i>
+                                    <span>None</span>
+                                </button>
+                                <button type="button" onclick="applyPreset('center')" class="px-3 py-2 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                    <span>Center</span>
+                                </button>
+                                <button type="button" onclick="applyPreset('space-between')" class="px-3 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-arrows-alt-h"></i>
+                                    <span>Between</span>
+                                </button>
+                                <button type="button" onclick="applyPreset('space-around')" class="px-3 py-2 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-grip-lines-vertical"></i>
+                                    <span>Around</span>
+                                </button>
+                                <button type="button" onclick="applyPreset('column')" class="px-3 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-arrows-alt-v"></i>
+                                    <span>Column</span>
+                                </button>
+                                <button type="button" onclick="applyPreset('grid')" class="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs transition-colors flex flex-col items-center gap-1">
+                                    <i class="fas fa-th"></i>
+                                    <span>Grid</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Configuration -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center">
+                                <i class="fas fa-shapes text-pink-400"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold">Box Configuration</h2>
+                                <p class="text-sm text-gray-400">Customize the character boxes</p>
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Number of Boxes</label>
+                                <input type="number" id="charCount" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" value="3" min="1" max="9" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Box Size (px)</label>
+                                <input type="number" id="boxSize" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none" value="50" min="30" max="100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Container Height</label>
+                                <select id="containerHeight" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none">
+                                    <option value="180">Small (180px)</option>
+                                    <option value="250" selected>Medium (250px)</option>
+                                    <option value="350">Large (350px)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Theme</label>
+                                <select id="charTheme" class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none">
+                                    <option value="wizard">🧙 Wizards</option>
+                                    <option value="dragon">🐉 Dragons</option>
+                                    <option value="elf">🧝 Elves</option>
+                                    <option value="knight">⚔️ Knights</option>
+                                    <option value="fairy">🧚 Fairies</option>
+                                    <option value="mixed">🎨 Mixed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex gap-2">
+                            <button type="button" onclick="updateAllPreviews()" class="flex-1 py-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 transition-colors font-medium flex items-center justify-center gap-2">
+                                <i class="fas fa-sync-alt"></i> Update Previews
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel - Dual Preview (2 cols) -->
+                <div class="xl:col-span-2 space-y-6">
+                    <div class="glass-card rounded-2xl p-6 sticky top-24">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                                    <i class="fas fa-columns text-cyan-400"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-semibold">Live Comparison</h2>
+                                    <p class="text-sm text-gray-400">Initial vs Target State</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dual Preview Mode Toggle -->
+                        <div class="flex gap-2 mb-4">
+                            <button type="button" onclick="setPreviewMode('split')" class="preview-mode-btn active flex-1 py-2 px-3 rounded-lg bg-indigo-500/30 text-indigo-300 text-sm font-medium transition-all flex items-center justify-center gap-2" data-mode="split">
+                                <i class="fas fa-columns"></i> Split View
+                            </button>
+                            <button type="button" onclick="setPreviewMode('single')" class="preview-mode-btn flex-1 py-2 px-3 rounded-lg bg-gray-800 text-gray-400 text-sm font-medium transition-all flex items-center justify-center gap-2" data-mode="single">
+                                <i class="fas fa-square"></i> Single View
+                            </button>
+                        </div>
+
+                        <!-- Split Preview -->
+                        <div id="splitPreview" class="space-y-4">
+                            <!-- Initial State Preview -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                        <span class="text-sm font-medium text-yellow-400">Initial State</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">What user sees first</span>
+                                </div>
+                                <div id="initialPreviewContainer" class="preview-container initial-state rounded-xl p-4 transition-all duration-300" style="min-height: 250px;">
+                                    <div id="initialFlexContainer" class="flex-container w-full h-full min-h-[200px]">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="comparison-arrow py-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+                                    <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                        <i class="fas fa-arrow-down text-indigo-400"></i>
+                                    </div>
+                                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+                                </div>
+                                <p class="text-center text-xs text-gray-500 mt-2">User applies CSS to achieve target</p>
+                            </div>
+
+                            <!-- Target State Preview -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span class="text-sm font-medium text-green-400">Target State</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">Goal to achieve</span>
+                                </div>
+                                <div id="targetPreviewContainer" class="preview-container target-state rounded-xl p-4 transition-all duration-300" style="min-height: 250px;">
+                                    <div id="targetFlexContainer" class="flex-container w-full h-full min-h-[200px]">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Single Preview (hidden by default) -->
+                        <div id="singlePreview" class="hidden">
+                            <div class="flex gap-2 mb-3">
+                                <button type="button" onclick="switchSinglePreview('initial')" class="single-preview-btn active flex-1 py-2 px-3 rounded-lg bg-yellow-500/30 text-yellow-400 text-sm font-medium transition-all" data-view="initial">
+                                    <i class="fas fa-play-circle mr-2"></i>Initial
+                                </button>
+                                <button type="button" onclick="switchSinglePreview('target')" class="single-preview-btn flex-1 py-2 px-3 rounded-lg bg-gray-800 text-gray-400 text-sm font-medium transition-all" data-view="target">
+                                    <i class="fas fa-flag-checkered mr-2"></i>Target
+                                </button>
+                            </div>
+                            <div id="singlePreviewContainer" class="preview-container initial-state rounded-xl p-4 transition-all duration-300" style="min-height: 300px;">
+                                <div id="singleFlexContainer" class="flex-container w-full h-full min-h-[260px]">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applied CSS Display -->
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-yellow-400">Initial CSS</span>
+                                    <button type="button" onclick="copyCSS('initial')" class="text-xs text-gray-500 hover:text-gray-300">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre id="initialCSSDisplay" class="mono text-xs p-3 rounded-lg bg-[#1e1e2e] border border-yellow-500/20 overflow-x-auto text-gray-400 h-20 overflow-y-auto">/* Default */</pre>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-green-400">Target CSS</span>
+                                    <button type="button" onclick="copyCSS('target')" class="text-xs text-gray-500 hover:text-gray-300">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre id="targetCSSDisplay" class="mono text-xs p-3 rounded-lg bg-[#1e1e2e] border border-green-500/20 overflow-x-auto text-gray-400 h-20 overflow-y-auto">/* Not set */</pre>
+                            </div>
+                        </div>
+
+                        <!-- Question Preview -->
+                        <div class="mt-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-scroll text-indigo-400 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-sm" id="previewTitle">Question Title</h4>
+                                    <p class="text-xs text-gray-400 mt-1" id="previewMission">Mission goal will appear here</p>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-xs text-yellow-400"><i class="fas fa-star mr-1"></i><span id="previewPoints">10</span> pts</span>
+                                        <span class="text-xs text-purple-400"><i class="fas fa-layer-group mr-1"></i>CSS Medium</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="button" onclick="submitForm()" class="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all font-semibold text-lg shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-3">
+                            <i class="fas fa-rocket"></i>
+                            Create Question
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="grid md:grid-cols-3 gap-4 mt-8">
+                <div class="glass-card rounded-xl p-5 border-l-4 border-yellow-500">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-play-circle text-yellow-400"></i>
+                        <h3 class="font-semibold">Initial State</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">Define how elements appear when user first loads the challenge. Can be empty for default.</p>
+                </div>
+                <div class="glass-card rounded-xl p-5 border-l-4 border-green-500">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-flag-checkered text-green-400"></i>
+                        <h3 class="font-semibold">Target State</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">The expected CSS solution that users need to match to complete the challenge.</p>
+                </div>
+                <div class="glass-card rounded-xl p-5 border-l-4 border-purple-500">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-check-double text-purple-400"></i>
+                        <h3 class="font-semibold">Validation</h3>
+                    </div>
+                    <p class="text-sm text-gray-400">User's CSS is compared against the target state for scoring and completion.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 px-6 py-4 rounded-xl glass-card shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
+        <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl"></i>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // State management
+        let currentCSSTab = 'initial';
+        let currentPreviewMode = 'split';
+        let currentSingleView = 'initial';
+
+        const themes = {
+            wizard: ['🧙', 'wizard'],
+            dragon: ['🐉', 'dragon'],
+            elf: ['🧝', 'elf'],
+            knight: ['⚔️', 'knight'],
+            fairy: ['🧚', 'fairy']
+        };
+        const mixedThemes = ['wizard', 'dragon', 'elf', 'knight', 'fairy'];
+
+        // Initialize
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 500);
+            updateAllPreviews();
+            setupLiveUpdates();
+        });
+
+        // Setup live preview updates
+        function setupLiveUpdates() {
+            const fields = ['title', 'missionGoal', 'points', 'charCount', 'boxSize', 'containerHeight', 'charTheme'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', updatePreviewInfo);
+                    el.addEventListener('change', updateAllPreviews);
+                }
+            });
+
+            // Live CSS preview updates
+            document.getElementById('initialCSS').addEventListener('input', debounce(applyInitialCSS, 300));
+            document.getElementById('targetCSS').addEventListener('input', debounce(applyTargetCSS, 300));
+        }
+
+        // Debounce helper
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Generate boxes for a container
+        function generateBoxes(container) {
+            const count = parseInt(document.getElementById('charCount').value) || 3;
+            const theme = document.getElementById('charTheme').value;
+            const boxSize = parseInt(document.getElementById('boxSize').value) || 50;
+            
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const box = document.createElement('div');
+                let currentTheme = theme === 'mixed' ? mixedThemes[i % mixedThemes.length] : theme;
+                
+                box.className = `char-box ${currentTheme}`;
+                box.style.width = `${boxSize}px`;
+                box.style.height = `${boxSize}px`;
+                box.textContent = themes[currentTheme]?.[0] || (i + 1);
+                container.appendChild(box);
+            }
+        }
+
+        // Update all preview containers
+        function updateAllPreviews() {
+            const height = document.getElementById('containerHeight').value + 'px';
+            
+            // Update Initial Preview
+            const initialContainer = document.getElementById('initialFlexContainer');
+            generateBoxes(initialContainer);
+            document.getElementById('initialPreviewContainer').style.minHeight = height;
+            applyInitialCSS();
+
+            // Update Target Preview
+            const targetContainer = document.getElementById('targetFlexContainer');
+            generateBoxes(targetContainer);
+            document.getElementById('targetPreviewContainer').style.minHeight = height;
+            applyTargetCSS();
+
+            // Update Single Preview
+            const singleContainer = document.getElementById('singleFlexContainer');
+            generateBoxes(singleContainer);
+            document.getElementById('singlePreviewContainer').style.minHeight = height;
+            
+            if (currentSingleView === 'initial') {
+                applyCSSToContainer(singleContainer, document.getElementById('initialCSS').value);
+            } else {
+                applyCSSToContainer(singleContainer, document.getElementById('targetCSS').value);
+            }
+
+            updatePreviewInfo();
+        }
+
+        // Apply CSS to a specific container
+        function applyCSSToContainer(container, cssText) {
+            container.style.cssText = '';
+            
+            if (!cssText.trim()) {
+                return;
+            }
+
+            const cssRules = cssText
+                .replace(/\.flex-container\s*\{/, '')
+                .replace(/\}[\s\S]*$/, '')
+                .trim();
+            
+            const properties = cssRules.split(';').filter(p => p.trim());
+            
+            properties.forEach(prop => {
+                const parts = prop.split(':');
+                if (parts.length >= 2) {
+                    const property = parts[0].trim();
+                    const value = parts.slice(1).join(':').trim();
+                    if (property && value) {
+                        container.style[toCamelCase(property)] = value;
+                    }
+                }
+            });
+        }
+
+        // Apply Initial CSS
+        function applyInitialCSS() {
+            const cssText = document.getElementById('initialCSS').value;
+            const container = document.getElementById('initialFlexContainer');
+            applyCSSToContainer(container, cssText);
+            document.getElementById('initialCSSDisplay').textContent = cssText || '/* Default layout */';
+            
+            if (currentSingleView === 'initial') {
+                const singleContainer = document.getElementById('singleFlexContainer');
+                applyCSSToContainer(singleContainer, cssText);
+            }
+        }
+
+        // Apply Target CSS
+        function applyTargetCSS() {
+            const cssText = document.getElementById('targetCSS').value;
+            const container = document.getElementById('targetFlexContainer');
+            applyCSSToContainer(container, cssText);
+            document.getElementById('targetCSSDisplay').textContent = cssText || '/* Not set */';
+            
+            if (currentSingleView === 'target') {
+                const singleContainer = document.getElementById('singleFlexContainer');
+                applyCSSToContainer(singleContainer, cssText);
+            }
+        }
+
+        // Convert CSS property to camelCase
+        function toCamelCase(str) {
+            return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        }
+
+        // Switch CSS Tab
+        function switchCSSTab(tab) {
+            currentCSSTab = tab;
+            
+            document.querySelectorAll('.css-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            document.getElementById(`${tab}CSSPanel`).classList.remove('hidden');
+            
+            document.querySelectorAll('.css-tab-btn').forEach(btn => {
+                const btnTab = btn.getAttribute('data-tab');
+                if (btnTab === tab) {
+                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-offset-[#0f0f1a]');
+                    btn.classList.add(tab === 'initial' ? 'ring-yellow-500' : 'ring-green-500');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-[#0f0f1a]', 'ring-yellow-500', 'ring-green-500');
+                }
+            });
+        }
+
+        // Apply preset to current tab
+        function applyPreset(preset) {
+            const presets = {
+                'none': '',
+                'center': `.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}`,
+                'space-between': `.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}`,
+                'space-around': `.flex-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}`,
+                'column': `.flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}`,
+                'grid': `.flex-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    place-items: center;
+}`
+            };
+            
+            const targetTextarea = currentCSSTab === 'initial' ? 'initialCSS' : 'targetCSS';
+            document.getElementById(targetTextarea).value = presets[preset];
+            
+            if (currentCSSTab === 'initial') {
+                applyInitialCSS();
+            } else {
+                applyTargetCSS();
+            }
+            
+            showToast(`Preset applied to ${currentCSSTab} state`, 'success');
+        }
+
+        // Set preview mode
+        function setPreviewMode(mode) {
+            currentPreviewMode = mode;
+            
+            document.querySelectorAll('.preview-mode-btn').forEach(btn => {
+                const btnMode = btn.getAttribute('data-mode');
+                if (btnMode === mode) {
+                    btn.classList.add('bg-indigo-500/30', 'text-indigo-300');
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-indigo-500/30', 'text-indigo-300');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                }
+            });
+
+            if (mode === 'split') {
+                document.getElementById('splitPreview').classList.remove('hidden');
+                document.getElementById('singlePreview').classList.add('hidden');
+            } else {
+                document.getElementById('splitPreview').classList.add('hidden');
+                document.getElementById('singlePreview').classList.remove('hidden');
+                updateSinglePreview();
+            }
+        }
+
+        // Switch single preview view
+        function switchSinglePreview(view) {
+            currentSingleView = view;
+            
+            document.querySelectorAll('.single-preview-btn').forEach(btn => {
+                const btnView = btn.getAttribute('data-view');
+                if (btnView === view) {
+                    btn.classList.add(view === 'initial' ? 'bg-yellow-500/30' : 'bg-green-500/30');
+                    btn.classList.add(view === 'initial' ? 'text-yellow-400' : 'text-green-400');
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-yellow-500/30', 'bg-green-500/30', 'text-yellow-400', 'text-green-400');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                }
+            });
+
+            const container = document.getElementById('singlePreviewContainer');
+            container.classList.remove('initial-state', 'target-state');
+            container.classList.add(view === 'initial' ? 'initial-state' : 'target-state');
+            
+            updateSinglePreview();
+        }
+
+        // Update single preview
+        function updateSinglePreview() {
+            const container = document.getElementById('singleFlexContainer');
+            generateBoxes(container);
+            
+            if (currentSingleView === 'initial') {
+                applyCSSToContainer(container, document.getElementById('initialCSS').value);
+            } else {
+                applyCSSToContainer(container, document.getElementById('targetCSS').value);
+            }
+        }
+
+        // Update preview info
+        function updatePreviewInfo() {
+            document.getElementById('previewTitle').textContent = document.getElementById('title').value || 'Question Title';
+            document.getElementById('previewMission').textContent = document.getElementById('missionGoal').value || 'Mission goal will appear here';
+            document.getElementById('previewPoints').textContent = document.getElementById('points').value || '10';
+        }
+
+        // Copy CSS
+        function copyCSS(type) {
+            const css = type === 'initial' 
+                ? document.getElementById('initialCSS').value 
+                : document.getElementById('targetCSS').value;
+            navigator.clipboard.writeText(css);
+            showToast('CSS copied to clipboard!', 'success');
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('flexGridForm').reset();
+            document.getElementById('initialCSS').value = '';
+            document.getElementById('targetCSS').value = '';
+            document.getElementById('charCount').value = 3;
+            document.getElementById('boxSize').value = 50;
+            document.getElementById('containerHeight').value = '250';
+            document.getElementById('charTheme').value = 'wizard';
+            
+            updateAllPreviews();
+            switchCSSTab('initial');
+            showToast('Form reset!', 'info');
+        }
+
+        // Submit form
+        async function submitForm() {
+            const title = document.getElementById('title').value.trim();
+            const points = parseInt(document.getElementById('points').value);
+            const story = document.getElementById('story').value.trim();
+            const missionGoal = document.getElementById('missionGoal').value.trim();
+            const hint1 = document.getElementById('hint1').value.trim();
+            const hint2 = document.getElementById('hint2').value.trim();
+            const initialCSS = document.getElementById('initialCSS').value.trim();
+            const targetCSS = document.getElementById('targetCSS').value.trim();
+            const charCount = parseInt(document.getElementById('charCount').value);
+            const boxSize = parseInt(document.getElementById('boxSize').value);
+            const containerHeight = document.getElementById('containerHeight').value;
+            const charTheme = document.getElementById('charTheme').value;
+            
+            // Validation
+            if (!title || !story || !missionGoal || !hint1 || !targetCSS) {
+                showToast('Please fill in all required fields including Target CSS!', 'error');
+                return;
+            }
+            
+            const questionData = {
+                title,
+                description: story,
+                topic: 'css',
+                difficulty: 'medium',
+                points,
+                hints: [hint1, hint2].filter(h => h),
+                initialCSS,
+                expectedCSS: targetCSS,
+                initialHTML: `<!-- ${charCount} ${charTheme} character boxes -->`,
+                targetImage: missionGoal,
+                charCount,
+                charTheme,
+                boxSize,
+                containerHeight: parseInt(containerHeight),
+                status: 'active'
+            };
+            
+            try {
+                const loader = document.getElementById('loadingOverlay');
+                loader.classList.remove('hidden');
+                
+                await API.Questions.create(questionData);
+                
+                showToast('Question created successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to create question: ' + (error.message || 'Unknown error'), 'error');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        }
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
+            msg.textContent = message;
+            
+            icon.className = 'fas text-xl';
+            if (type === 'success') {
+                icon.classList.add('fa-check-circle', 'text-green-400');
+            } else if (type === 'error') {
+                icon.classList.add('fa-times-circle', 'text-red-400');
+            } else {
+                icon.classList.add('fa-info-circle', 'text-blue-400');
+            }
+            
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateY(20px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

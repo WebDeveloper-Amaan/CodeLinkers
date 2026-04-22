@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Challenge - CodeLinkers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="game-styles.css">
+</head>
+<body class="dark">
+    <!-- Animated Background -->
+    <div class="bg-animated">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading challenges...</div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <div class="logo-section">
+            <a href="index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                <div class="logo-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <span class="logo-text">CodeLinkers</span>
+            </a>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-item points">
+                <i class="fas fa-star"></i>
+                <span class="stat-value" id="totalPoints">0</span>
+                <span>pts</span>
+            </div>
+            <div class="stat-item streak">
+                <i class="fas fa-fire"></i>
+                <span class="stat-value" id="currentStreak">0</span>
+                <span>streak</span>
+            </div>
+            <div class="stat-item timer">
+                <i class="fas fa-clock"></i>
+                <span class="stat-value" id="timerDisplay">00:00</span>
+            </div>
+            <div class="stat-item level">
+                <i class="fas fa-layer-group"></i>
+                <span id="levelDisplay">Beginner</span>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <button class="btn btn-ghost btn-icon" onclick="GameUI.toggleShortcuts()" title="Keyboard Shortcuts">
+                <i class="fas fa-keyboard"></i>
+            </button>
+            <button class="btn btn-ghost btn-icon" onclick="ThemeManager.toggle()" title="Toggle Theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <button class="btn btn-ghost" onclick="window.location.href='games.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Exit</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Game Layout -->
+    <main class="game-layout">
+        <!-- Question Panel -->
+        <section class="panel question-panel">
+            <div class="question-header">
+                <div class="question-meta">
+                    <div class="question-badges">
+                        <span class="badge badge-beginner" id="difficultyBadge">Beginner</span>
+                        <span class="badge badge-css" id="topicBadge">CSS</span>
+                    </div>
+                    <span class="question-points" id="pointsDisplay">+5 pts</span>
+                </div>
+                <span class="question-number" id="questionNumber">Question 1 of 10</span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressText">0 completed</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </div>
+
+            <div class="question-body">
+                <h2 class="question-title" id="questionTitle">Loading challenge...</h2>
+                <p class="question-description" id="questionDescription">Please wait...</p>
+
+                <div class="hints-section">
+                    <button class="hint-toggle" onclick="GameLogic.toggleHint()">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Need a hint?</span>
+                    </button>
+                    <div class="hint-content" id="hintContent">
+                        <p id="hintText">No hint available.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-footer">
+                <div class="level-indicator">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Level <span id="currentLevel">1</span> of <span id="totalLevels">10</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editor Panel -->
+        <section class="panel editor-panel">
+            <div class="editor-header">
+                <div class="editor-tabs">
+                    <button class="editor-tab active" onclick="GameUI.switchEditorTab('css')">
+                        <i class="fab fa-css3-alt"></i> CSS
+                    </button>
+                    <button class="editor-tab" onclick="GameUI.switchEditorTab('html')">
+                        <i class="fab fa-html5"></i> HTML
+                    </button>
+                </div>
+                <div class="editor-actions">
+                    <button class="btn btn-ghost btn-icon" onclick="GameUI.resetCode()" title="Reset Code">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-body">
+                <div class="code-wrapper" id="cssEditorWrapper">
+                    <div class="line-numbers" id="cssLineNumbers">1</div>
+                    <textarea class="code-editor" id="cssEditor" spellcheck="false" placeholder="/* Write your CSS here */"></textarea>
+                </div>
+                <div class="code-wrapper" id="htmlEditorWrapper" style="display: none;">
+                    <div class="line-numbers" id="htmlLineNumbers">1</div>
+                    <textarea class="code-editor" id="htmlEditor" spellcheck="false" placeholder="<!-- Write your HTML here -->"></textarea>
+                </div>
+            </div>
+
+            <div class="editor-footer">
+                <button class="btn btn-primary" onclick="GameUI.runCode()">
+                    <i class="fas fa-play"></i> Run Code
+                </button>
+                <button class="btn btn-success" onclick="GameLogic.submitAnswer()">
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+            </div>
+        </section>
+
+        <!-- Output Panel -->
+        <section class="panel output-panel">
+            <div class="output-header">
+                <div class="output-tabs">
+                    <button class="output-tab active">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                </div>
+                <button class="btn btn-ghost btn-icon" onclick="GameUI.refreshPreview()" title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <div class="output-body">
+                <div class="output-view active" id="previewView">
+                    <div class="preview-container">
+                        <iframe class="preview-frame" id="previewFrame"></iframe>
+                    </div>
+                </div>
+                
+                <!-- Expected Output Below Preview -->
+                <div class="target-section">
+                    <div class="target-header">
+                        <i class="fas fa-bullseye"></i>
+                        <span>Expected Output - Match This!</span>
+                    </div>
+                    <div class="target-container">
+                        <iframe class="expected-frame" id="expectedFrame"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="result-modal">
+            <div class="result-icon" id="resultIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="result-title" id="resultTitle">Excellent!</h2>
+            <p class="result-message" id="resultMessage">You solved the challenge!</p>
+            
+            <div class="result-stats" id="resultStats">
+                <div class="result-stat">
+                    <div class="result-stat-value" id="earnedPoints">+10</div>
+                    <div class="result-stat-label">Points Earned</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="streakCount">5</div>
+                    <div class="result-stat-label">Current Streak</div>
+                </div>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn btn-primary" onclick="GameLogic.nextChallenge()">
+                    Next Level <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcutsModal" onclick="GameUI.toggleShortcuts()">
+        <div class="shortcuts-modal" onclick="event.stopPropagation()">
+            <h3 class="shortcuts-title">
+                <i class="fas fa-keyboard"></i> Keyboard Shortcuts
+            </h3>
+            <div class="shortcut-item">
+                <span>Run Code</span>
+                <div class="shortcut-keys">
+                    <kbd>Ctrl</kbd><kbd>Enter</kbd>
+                </div>
+            </div>
+            <div class="shortcut-item">
+                <span>Submit Answer</span>
+                <div class="shortcut-keys">
+                    <kbd>Ctrl</kbd><kbd>S</kbd>
+                </div>
+            </div>
+            <div class="shortcut-item">
+                <span>Reset Code</span>
+                <div class="shortcut-keys">
+                    <kbd>Ctrl</kbd><kbd>R</kbd>
+                </div>
+            </div>
+            <div class="shortcut-item">
+                <span>Show Hint</span>
+                <div class="shortcut-keys">
+                    <kbd>Ctrl</kbd><kbd>H</kbd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

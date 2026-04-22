@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Flexbox/Grid Question - CodeLinkers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="admin.html" class="nav-logo">
+            <div class="nav-logo-icon"><i class="fas fa-code"></i></div>
+            <span class="nav-logo-text">CodeLinkers Admin</span>
+        </a>
+        <div class="nav-actions">
+            <button class="btn btn-ghost" onclick="window.location.href='admin.html'">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 100px; max-width: 900px;">
+        <div class="card">
+            <h1 style="margin-bottom: 8px;">Add Flexbox/Grid Question</h1>
+            <p style="color: var(--text-dark-muted); margin-bottom: 32px;">Create CSS Medium level questions for the Flexbox & Grid Adventure game</p>
+
+            <form id="flexGridForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Question Title *</label>
+                        <input type="text" id="title" class="form-input" placeholder="The Sorting Ceremony" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Points *</label>
+                        <input type="number" id="points" class="form-input" value="10" min="5" max="50" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Story/Description *</label>
+                    <textarea id="story" class="form-input" rows="3" placeholder="Welcome to Hogwarts! The Great Hall awaits..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mission Goal *</label>
+                    <input type="text" id="missionGoal" class="form-input" placeholder="Center the students in the Great Hall" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Hint 1 (Mission Hint) *</label>
+                    <input type="text" id="hint1" class="form-input" placeholder="Use Flexbox to position the wizards" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Hint 2 (CSS Tip)</label>
+                    <input type="text" id="hint2" class="form-input" placeholder="Use display: flex and justify-content: center">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Expected CSS Solution *</label>
+                    <textarea id="expectedCSS" class="form-input" rows="8" placeholder=".flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}" required></textarea>
+                    <small style="color: var(--text-dark-muted);">This CSS will be used to validate student answers and show in Goal preview</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="window.location.href='admin.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Question
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card" style="margin-top: 24px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);">
+            <h3 style="margin-bottom: 12px;"><i class="fas fa-info-circle"></i> How It Works</h3>
+            <ul style="color: var(--text-dark-muted); line-height: 1.8;">
+                <li>Questions are automatically set as <strong>CSS Medium</strong> difficulty</li>
+                <li>Students write CSS in <code>.flex-container { }</code> selector</li>
+                <li>The game displays 3 character boxes that respond to their CSS</li>
+                <li><strong>Expected CSS</strong> is used for validation AND shown in Goal preview</li>
+                <li>Points are awarded when CSS properties match</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 500);
+        });
+
+        document.getElementById('flexGridForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const points = parseInt(document.getElementById('points').value);
+            const story = document.getElementById('story').value.trim();
+            const missionGoal = document.getElementById('missionGoal').value.trim();
+            const hint1 = document.getElementById('hint1').value.trim();
+            const hint2 = document.getElementById('hint2').value.trim();
+            const expectedCSS = document.getElementById('expectedCSS').value.trim();
+            
+            const questionData = {
+                title,
+                description: story,
+                topic: 'css',
+                difficulty: 'medium',
+                points,
+                hints: [hint1, hint2].filter(h => h),
+                expectedCSS,
+                initialHTML: '<!-- 3 character boxes -->',
+                targetImage: missionGoal,
+                status: 'active'
+            };
+            
+            try {
+                const loader = document.getElementById('loadingOverlay');
+                loader.style.display = 'flex';
+                
+                await API.Questions.create(questionData);
+                
+                alert('✅ Flexbox/Grid question created successfully!');
+                window.location.href = 'admin.html';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Failed to create question: ' + (error.message || 'Unknown error'));
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dark-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        textarea.form-input {
+            font-family: 'JetBrains Mono', monospace;
+            resize: vertical;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        small {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+        
+        code {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</body>
+</html>
