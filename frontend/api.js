@@ -190,11 +190,54 @@ const UsersAPI = {
   }
 };
 
+// Biometric API
+const BiometricAPI = {
+  enrollFace: async (faceImage, pin) => {
+    return await apiCall('/biometric/enroll-face', {
+      method: 'POST',
+      body: JSON.stringify({ faceImage, pin })
+    });
+  },
+
+  enrollVoice: async (voiceAudio, pin) => {
+    return await apiCall('/biometric/enroll-voice', {
+      method: 'POST',
+      body: JSON.stringify({ voiceAudio, pin })
+    });
+  },
+
+  verifyFace: async (faceImage, pin = null) => {
+    return await apiCall('/biometric/verify-face', {
+      method: 'POST',
+      body: JSON.stringify({ faceImage, pin })
+    });
+  },
+
+  verifyVoice: async (voiceAudio, pin = null) => {
+    return await apiCall('/biometric/verify-voice', {
+      method: 'POST',
+      body: JSON.stringify({ voiceAudio, pin })
+    });
+  }
+};
+
+// Chatbot API
+const ChatbotAPI = {
+  sendMessage: async (message) => {
+    return await apiCall('/chatbot/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    });
+  }
+};
+
 // Export all APIs
 window.API = {
   Auth: AuthAPI,
   Questions: QuestionsAPI,
   Notes: NotesAPI,
   Videos: VideosAPI,
-  Users: UsersAPI
+  Users: UsersAPI,
+  Biometric: BiometricAPI,
+  Chatbot: ChatbotAPI
 };

@@ -44,6 +44,23 @@ const userSchema = new mongoose.Schema({
     },
     completedAt: Date
   }],
+  faceEmbedding: {
+    type: [Number],
+    default: null
+  },
+  voiceEmbedding: {
+    type: [Number],
+    default: null
+  },
+  biometricEnabled: {
+    type: Boolean,
+    default: false
+  },
+  biometricPin: {
+    type: String,
+    default: null,
+    select: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

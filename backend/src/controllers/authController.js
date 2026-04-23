@@ -7,6 +7,10 @@ const generateToken = (id) => {
   });
 };
 
+User.prototype.generateAuthToken = function() {
+  return generateToken(this._id);
+};
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;

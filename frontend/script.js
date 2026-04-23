@@ -445,6 +445,126 @@ function logout() {
     }
 }
 
+// ============================================
+// BIOMETRIC AUTHENTICATION FUNCTIONS
+// ============================================
+
+// Face Login
+async function loginWithFace() {
+    try {
+        BiometricHelper.showCameraModal(async (faceImage) => {
+            try {
+                const response = await API.Biometric.verifyFace(faceImage);
+                
+                if (response.needsPin) {
+                    BiometricHelper.showPinModal(response.userName, async (pin) => {
+                        try {
+                            const verifyResponse = await API.Biometric.verifyFace(faceImage, pin);
+                            const { token, user } = verifyResponse.data;
+                            
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify(user));
+                            
+                            alert('✅ Welcome back, ' + user.name + '!');
+                            window.location.href = 'dashboard.html';
+                        } catch (error) {
+                            alert('❌ ' + (error.message || 'Invalid PIN'));
+                        }
+                    });
+                } else {
+                    const { token, user } = response.data;
+                    
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    alert('✅ Welcome back, ' + user.name + '!');
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                alert('❌ Face not recognized. Please try again or use password.');
+            }
+        });
+    } catch (error) {
+        alert('❌ Camera access required for face login');
+    }
+}
+
+// Voice Login
+async function loginWithVoice() {
+    try {
+        BiometricHelper.showMicModal(async (voiceAudio) => {
+            try {
+                const response = await API.Biometric.verifyVoice(voiceAudio);
+                
+                if (response.needsPin) {
+                    BiometricHelper.showPinModal(response.userName, async (pin) => {
+                        try {
+                            const verifyResponse = await API.Biometric.verifyVoice(voiceAudio, pin);
+                            const { token, user } = verifyResponse.data;
+                            
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify(user));
+                            
+                            alert('✅ Welcome back, ' + user.name + '!');
+                            window.location.href = 'dashboard.html';
+                        } catch (error) {
+                            alert('❌ ' + (error.message || 'Invalid PIN'));
+                        }
+                    });
+                } else {
+                    const { token, user } = response.data;
+                    
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    alert('✅ Welcome back, ' + user.name + '!');
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                alert('❌ Voice not recognized. Please try again or use password.');
+            }
+        });
+    } catch (error) {
+        alert('❌ Microphone access required for voice login');
+    }
+}
+
+// Enroll Face (call after user logs in)
+async function enrollFace() {
+    try {
+        BiometricHelper.showCameraModal(async (faceImage) => {
+            try {
+                await API.Biometric.enrollFace(faceImage);
+                alert('Face enrolled successfully! You can now login with your face.');
+            } catch (error) {
+                alert('Failed to enroll face: ' + error.message);
+            }
+        });
+    } catch (error) {
+        alert('Camera access required');
+    }
+}
+
+// Enroll Voice (call after user logs in)
+async function enrollVoice() {
+    try {
+        BiometricHelper.showMicModal(async (voiceAudio) => {
+            try {
+                await API.Biometric.enrollVoice(voiceAudio);
+                alert('Voice enrolled successfully! You can now login with your voice.');
+            } catch (error) {
+                alert('Failed to enroll voice: ' + error.message);
+            }
+        });
+    } catch (error) {
+        alert('Microphone access required');
+    }
+}
+
 // Export for global access
 window.ThemeManager = ThemeManager;
 window.ModalManager = ModalManager;
+window.loginWithFace = loginWithFace;
+window.loginWithVoice = loginWithVoice;
+window.enrollFace = enrollFace;
+window.enrollVoice = enrollVoice;

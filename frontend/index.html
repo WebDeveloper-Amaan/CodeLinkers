@@ -402,6 +402,21 @@
             </button>
             <h2 class="modal-title">Welcome Back!</h2>
             <p class="modal-subtitle">Log in to continue your learning journey</p>
+            
+            <!-- BIOMETRIC LOGIN BUTTONS -->
+            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                <button class="btn btn-secondary w-full" onclick="loginWithFace()" style="flex: 1;">
+                    <i class="fas fa-camera"></i> Face
+                </button>
+                <button class="btn btn-secondary w-full" onclick="loginWithVoice()" style="flex: 1;">
+                    <i class="fas fa-microphone"></i> Voice
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0; color: var(--text-dark-muted); font-size: 0.9rem;">
+                <span>OR USE PASSWORD</span>
+            </div>
+            
             <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label">Email</label>
@@ -494,6 +509,7 @@
     </div>
 
     <script src="api.js"></script>
+    <script src="biometric.js"></script>
     <script src="script.js"></script>
     <script>
         // Load dynamic stats

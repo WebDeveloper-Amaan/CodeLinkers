@@ -1,0 +1,11 @@
+flask
+flask-cors
+numpy
+scikit-learn
+face-recognition
+pillow
+librosa
+resemblyzer
+soundfile
+pydub
+ffmpeg-python

@@ -20,10 +20,12 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // API Routes
 app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/biometric', require('./src/routes/biometricRoutes'));
 app.use('/api/questions', require('./src/routes/questionRoutes'));
 app.use('/api/notes', require('./src/routes/noteRoutes'));
 app.use('/api/videos', require('./src/routes/videoRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes'));
+app.use('/api/chatbot', require('./src/routes/chatbotRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
