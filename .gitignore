@@ -38,3 +38,12 @@ build/
 # Testing
 coverage/
 .nyc_output/
+
+# Documentation (Personal/Private)
+# Exclude all documentation files except README.md
+*.md
+!README.md
+
+# Batch files
+*.bat
+*.ps1

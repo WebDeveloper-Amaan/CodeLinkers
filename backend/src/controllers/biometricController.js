@@ -94,8 +94,27 @@ exports.verifyFace = async (req, res) => {
 
     for (const user of users) {
       const similarity = cosineSimilarity(newEmbedding, user.faceEmbedding);
-      if (similarity > bestSimilarity && similarity >= 0.65) {
-        bestSimilarity = similarity;
+      const euclideanDist = euclideanDistance(newEmbedding, user.faceEmbedding);
+      const manhattanDist = manhattanDistance(newEmbedding, user.faceEmbedding);
+      
+      // Calculate combined score
+      const euclideanSimilarity = Math.max(0, 1 - (euclideanDist / 2));
+      const manhattanSimilarity = Math.max(0, 1 - (manhattanDist / 128));
+      const combinedScore = (
+        similarity * 0.5 +
+        euclideanSimilarity * 0.3 +
+        manhattanSimilarity * 0.2
+      );
+      
+      // Strict matching criteria - ALL conditions must be met
+      if (
+        similarity >= 0.75 &&           // Cosine similarity threshold (stricter)
+        euclideanDist <= 0.4 &&         // Euclidean distance threshold (stricter)
+        manhattanDist <= 50 &&          // Manhattan distance threshold
+        combinedScore >= 0.70 &&        // Combined score threshold
+        combinedScore > bestSimilarity
+      ) {
+        bestSimilarity = combinedScore;
         matchedUser = user;
       }
     }
@@ -166,8 +185,27 @@ exports.verifyVoice = async (req, res) => {
 
     for (const user of users) {
       const similarity = cosineSimilarity(newEmbedding, user.voiceEmbedding);
-      if (similarity > bestSimilarity && similarity >= 0.65) {
-        bestSimilarity = similarity;
+      const euclideanDist = euclideanDistance(newEmbedding, user.voiceEmbedding);
+      const manhattanDist = manhattanDistance(newEmbedding, user.voiceEmbedding);
+      
+      // Calculate combined score
+      const euclideanSimilarity = Math.max(0, 1 - (euclideanDist / 2));
+      const manhattanSimilarity = Math.max(0, 1 - (manhattanDist / 128));
+      const combinedScore = (
+        similarity * 0.5 +
+        euclideanSimilarity * 0.3 +
+        manhattanSimilarity * 0.2
+      );
+      
+      // Strict matching criteria for voice
+      if (
+        similarity >= 0.75 &&
+        euclideanDist <= 0.4 &&
+        manhattanDist <= 50 &&
+        combinedScore >= 0.70 &&
+        combinedScore > bestSimilarity
+      ) {
+        bestSimilarity = combinedScore;
         matchedUser = user;
       }
     }
@@ -226,4 +264,23 @@ function cosineSimilarity(arr1, arr2) {
   }
   
   return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
+}
+
+// Helper: Euclidean Distance
+function euclideanDistance(arr1, arr2) {
+  let sum = 0;
+  for (let i = 0; i < arr1.length; i++) {
+    const diff = arr1[i] - arr2[i];
+    sum += diff * diff;
+  }
+  return Math.sqrt(sum);
+}
+
+// Helper: Manhattan Distance
+function manhattanDistance(arr1, arr2) {
+  let sum = 0;
+  for (let i = 0; i < arr1.length; i++) {
+    sum += Math.abs(arr1[i] - arr2[i]);
+  }
+  return sum;
 }
