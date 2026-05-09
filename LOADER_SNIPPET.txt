@@ -1,0 +1,18 @@
+<!-- Add this after <link rel="stylesheet" href="styles.css"> -->
+<link rel="stylesheet" href="loader.css">
+
+<!-- Add this right after <body class="dark"> -->
+<div class="page-loader" id="pageLoader">
+    <div class="loader-logo"><i class="fas fa-code"></i></div>
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading...</div>
+</div>
+
+<!-- Add this before </body> -->
+<script>
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('pageLoader').classList.add('hidden');
+    }, 500);
+});
+</script>

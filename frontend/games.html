@@ -557,9 +557,7 @@
                         const topicData = stats.progressByTopic[topic];
                         Object.keys(topicData).forEach(difficulty => {
                             const data = topicData[difficulty];
-                            if (data.completed > 0) {
-                                updateUserProgressBar(topic, difficulty, data.completed, data.total);
-                            }
+                            updateUserProgressBar(topic, difficulty, data.completed, data.total);
                         });
                     });
                 }
@@ -570,6 +568,7 @@
 
         function updateUserProgressBar(topic, difficulty, completedCount, total) {
             const cards = document.querySelectorAll('.game-level-card');
+            
             cards.forEach(card => {
                 const button = card.querySelector('button');
                 

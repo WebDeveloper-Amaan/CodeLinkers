@@ -399,10 +399,12 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="api.js"></script>
     <script src="script.js"></script>
     <script>
-        // Load leaderboard data
+        let allUsers = [];
+
         document.addEventListener('DOMContentLoaded', async () => {
             await loadLeaderboard();
         });
@@ -410,47 +412,67 @@
         async function loadLeaderboard() {
             try {
                 const response = await API.Users.getLeaderboard();
-                const users = response.data || response;
+                allUsers = response.data || [];
                 
-                if (!users || users.length === 0) {
-                    console.log('No users found');
+                if (!allUsers || allUsers.length === 0) {
+                    showEmptyState();
                     return;
                 }
                 
-                // Update all time tab
-                const alltimePanel = document.querySelector('[data-tab-panel="alltime"]');
-                alltimePanel.innerHTML = `
-                    <div class="leaderboard-header">
-                        <h2>All Time Rankings</h2>
-                        <p>Since platform launch</p>
-                    </div>
-                    <div class="leaderboard-table">
-                        <div class="leaderboard-row header">
-                            <span>Rank</span>
-                            <span>Player</span>
-                            <span>Level</span>
-                            <span>Solved</span>
-                            <span>Points</span>
-                        </div>
-                        ${users.map((user, index) => `
-                            <div class="leaderboard-row">
-                                <span class="rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</span>
-                                <span class="player">
-                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}" alt="">
-                                    ${user.name}
-                                </span>
-                                <span><span class="badge badge-beginner">Level ${Math.floor(user.points / 200) + 1}</span></span>
-                                <span>${user.progress?.filter(p => p.completed).length || 0}</span>
-                                <span class="points">${user.points || 0}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                updateStats(allUsers);
+                renderLeaderboard('monthly', allUsers);
+                renderLeaderboard('weekly', allUsers);
+                renderLeaderboard('alltime', allUsers);
                 
-                // Update monthly tab (same data for now)
-                const monthlyPanel = document.querySelector('[data-tab-panel="monthly"]');
-                if (users.length >= 3) {
-                    const top3HTML = `
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        function updateStats(users) {
+            const totalPoints = users.reduce((sum, u) => sum + (u.points || 0), 0);
+            const totalSolved = users.reduce((sum, u) => sum + (u.completedCount || 0), 0);
+            const activeToday = users.filter(u => {
+                const today = new Date().setHours(0,0,0,0);
+                const userDate = new Date(u.createdAt).setHours(0,0,0,0);
+                return userDate === today;
+            }).length;
+            
+            document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = users.length.toLocaleString();
+            document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = totalSolved.toLocaleString();
+            document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = totalPoints.toLocaleString();
+            document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = activeToday.toLocaleString();
+        }
+
+        function renderLeaderboard(type, users) {
+            const panel = document.querySelector(`[data-tab-panel="${type}"]`);
+            if (!panel) return;
+
+            const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+            const userRank = currentUser ? users.findIndex(u => u._id === currentUser._id) + 1 : null;
+
+            let headerText = 'All Time Rankings';
+            let subText = 'Since platform launch';
+            if (type === 'monthly') {
+                headerText = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) + ' Rankings';
+                subText = 'Resets in ' + (30 - new Date().getDate()) + ' days';
+            } else if (type === 'weekly') {
+                headerText = 'This Week\'s Rankings';
+                const daysLeft = 7 - new Date().getDay();
+                subText = 'Resets in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+            }
+
+            let html = `
+                <div class="leaderboard-header">
+                    <h2>${headerText}</h2>
+                    <p>${subText}</p>
+                </div>
+            `;
+
+            if (users.length >= 3) {
+                html += `
+                    <div class="podium">
                         <div class="podium-item second">
                             <div class="podium-avatar">
                                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${users[1].name}" alt="">
@@ -458,7 +480,7 @@
                             </div>
                             <h3>${users[1].name}</h3>
                             <p class="podium-points">${users[1].points || 0} pts</p>
-                            <span class="badge badge-medium">Level ${Math.floor(users[1].points / 200) + 1}</span>
+                            <span class="badge badge-medium">${users[1].completedCount || 0} solved</span>
                         </div>
                         <div class="podium-item first">
                             <div class="podium-crown"><i class="fas fa-crown"></i></div>
@@ -468,7 +490,7 @@
                             </div>
                             <h3>${users[0].name}</h3>
                             <p class="podium-points">${users[0].points || 0} pts</p>
-                            <span class="badge badge-advanced">Level ${Math.floor(users[0].points / 200) + 1}</span>
+                            <span class="badge badge-advanced">${users[0].completedCount || 0} solved</span>
                         </div>
                         <div class="podium-item third">
                             <div class="podium-avatar">
@@ -477,22 +499,80 @@
                             </div>
                             <h3>${users[2].name}</h3>
                             <p class="podium-points">${users[2].points || 0} pts</p>
-                            <span class="badge badge-medium">Level ${Math.floor(users[2].points / 200) + 1}</span>
+                            <span class="badge badge-beginner">${users[2].completedCount || 0} solved</span>
                         </div>
-                    `;
-                    monthlyPanel.querySelector('.podium').innerHTML = top3HTML;
-                }
-                
-                // Update stats
-                const totalPoints = users.reduce((sum, u) => sum + (u.points || 0), 0);
-                const totalSolved = users.reduce((sum, u) => sum + (u.progress?.filter(p => p.completed).length || 0), 0);
-                document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = users.length;
-                document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = totalSolved;
-                document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = totalPoints;
-                
-            } catch (error) {
-                console.error('Error loading leaderboard:', error);
+                    </div>
+                `;
             }
+
+            html += `
+                <div class="leaderboard-table">
+                    <div class="leaderboard-row header">
+                        <span>Rank</span>
+                        <span>Player</span>
+                        <span>Level</span>
+                        <span>Solved</span>
+                        <span>Points</span>
+                    </div>
+                    ${users.slice(0, 50).map((user, index) => {
+                        const rank = index + 1;
+                        const level = Math.floor((user.points || 0) / 100) + 1;
+                        const isCurrentUser = currentUser && user._id === currentUser._id;
+                        return `
+                            <div class="leaderboard-row ${isCurrentUser ? 'current-user' : ''}">
+                                <span class="rank ${rank <= 3 ? 'rank-' + rank : ''}">${rank}</span>
+                                <span class="player">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}" alt="">
+                                    ${user.name} ${isCurrentUser ? '<span class="you-badge">YOU</span>' : ''}
+                                </span>
+                                <span><span class="badge badge-${level <= 3 ? 'beginner' : level <= 7 ? 'medium' : 'advanced'}">Level ${level}</span></span>
+                                <span>${user.completedCount || 0}</span>
+                                <span class="points">${(user.points || 0).toLocaleString()}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            if (userRank && userRank > 50) {
+                html += `
+                    <div class="your-rank-card">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <strong>Your Rank: #${userRank}</strong>
+                            <p>${currentUser.points || 0} points • ${users.find(u => u._id === currentUser._id)?.completedCount || 0} solved</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            panel.innerHTML = html;
+        }
+
+        function showEmptyState() {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users-slash"></i>
+                        <h3>No Rankings Yet</h3>
+                        <p>Be the first to solve challenges and climb the leaderboard!</p>
+                        <a href="games.html" class="btn btn-primary">Start Playing</a>
+                    </div>
+                `;
+            });
+        }
+
+        function showErrorState(message) {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Leaderboard</h3>
+                        <p>${message}</p>
+                        <button class="btn btn-primary" onclick="loadLeaderboard()">Try Again</button>
+                    </div>
+                `;
+            });
         }
     </script>
 
@@ -759,6 +839,22 @@
             background: rgba(99, 102, 241, 0.05);
         }
 
+        .leaderboard-row.current-user {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .you-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--primary);
+            color: white;
+            margin-left: 8px;
+        }
+
         .leaderboard-row.header {
             font-weight: 600;
             font-size: 0.85rem;
@@ -855,6 +951,71 @@
         }
 
         body.light .points-desc {
+            color: var(--text-light-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        body.dark .empty-state p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .empty-state p {
+            color: var(--text-light-muted);
+        }
+
+        .your-rank-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            margin-top: 24px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid var(--primary);
+        }
+
+        .your-rank-card i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .your-rank-card strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .your-rank-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        body.dark .your-rank-card p {
+            color: var(--text-dark-muted);
+        }
+
+        body.light .your-rank-card p {
             color: var(--text-light-muted);
         }
 

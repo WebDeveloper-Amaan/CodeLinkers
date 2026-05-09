@@ -3,12 +3,15 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# Environment variables
+# Environment variables (CRITICAL - Never commit these!)
 .env
 .env.local
 .env.production
+.env.*.local
+# Allow .env.example (template file)
+!.env.example
 
-# Uploads
+# Uploads (User generated content)
 uploads/notes/*
 uploads/images/*
 !uploads/notes/.gitkeep
@@ -18,32 +21,80 @@ uploads/images/*
 logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE
-.vscode/
-.idea/
 *.swp
 *.swo
 *~
 
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
 # Build
 dist/
 build/
+.cache/
 
 # Testing
 coverage/
 .nyc_output/
+*.test.js.snap
 
-# Documentation (Personal/Private)
-# Exclude all documentation files except README.md
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database dumps
+*.sql
+*.sqlite
+*.db
+
+# Certificates & Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Documentation (Keep only essential docs)
 *.md
 !README.md
+!PRODUCTION_FIXES.md
 
-# Batch files
+# Scripts (Batch files can be dangerous)
 *.bat
 *.ps1
+!START_SERVER.bat
+
+# Python (for biometric service)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+ENV/
+
+# Sensitive data patterns
+*secret*
+*password*
+*private*
+*credential*
+*token*
+# But allow these specific files
+!.env.example

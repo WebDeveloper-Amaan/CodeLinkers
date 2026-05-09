@@ -1,5 +1,5 @@
 // API Configuration
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.CONFIG?.API_URL || 'http://localhost:5000/api';
 
 // Helper function to get auth token
 const getToken = () => localStorage.getItem('token');
@@ -24,22 +24,30 @@ const apiCall = async (endpoint, options = {}) => {
 
     const contentType = response.headers.get('content-type');
     
-    // Check if response is JSON
     if (contentType && contentType.includes('application/json')) {
       const data = await response.json();
       
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          if (window.location.pathname !== '/index.html' && window.location.pathname !== '/') {
+            window.location.href = '/index.html';
+          }
+        }
         throw new Error(data.message || 'Something went wrong');
       }
       
       return data;
     } else {
-      // Response is not JSON (probably HTML error page)
       const text = await response.text();
       console.error('Non-JSON response:', text.substring(0, 200));
       throw new Error(`Server error: ${response.status} ${response.statusText}`);
     }
   } catch (error) {
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('Network error. Please check your connection.');
+    }
     console.error('API Error:', error);
     throw error;
   }

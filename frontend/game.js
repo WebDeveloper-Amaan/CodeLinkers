@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         GameState.difficulty.charAt(0).toUpperCase() + GameState.difficulty.slice(1);
 
     await GameLogic.loadQuestions();
-    await GameLogic.loadUserData();
+    await GameLogic.loadUserData(); // Load after questions to match IDs
     GameUI.setupEventListeners();
     GameLogic.startTimer();
     
@@ -68,6 +68,8 @@ const GameLogic = {
                         }
                     }
                 });
+                // Update progress bar after loading completed questions
+                GameUI.updateProgressBar();
             }
         } catch (error) {
             console.error('Error loading user data:', error);

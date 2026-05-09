@@ -508,6 +508,7 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="api.js"></script>
     <script src="biometric.js"></script>
     <script src="script.js"></script>
@@ -564,13 +565,20 @@
             const email = formData.get('adminEmail');
             const password = formData.get('adminPassword');
             
+            const btn = this.querySelector('button[type="submit"]');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            
             try {
                 const response = await API.Auth.login({ email, password });
                 const { token, user } = response.data || response;
                 
                 // Check if user is admin
                 if (user.role !== 'admin') {
-                    alert('Access denied. Admin privileges required.');
+                    showErrorMessage('❌ Access denied. Admin privileges required.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
                     return;
                 }
                 
@@ -578,10 +586,17 @@
                 localStorage.setItem('token', token);
                 localStorage.setItem('user', JSON.stringify(user));
                 
+                ModalManager.close('adminLoginModal');
+                showSuccessMessage('✅ Admin access granted! Redirecting...');
+                
                 // Redirect to admin panel
-                window.location.href = 'admin.html';
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
             } catch (error) {
-                alert('Invalid credentials. Please try again.');
+                showErrorMessage('❌ Invalid credentials. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
             }
         });
     </script>

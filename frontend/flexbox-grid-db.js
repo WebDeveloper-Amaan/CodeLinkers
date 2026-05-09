@@ -1,9 +1,10 @@
-// Database-integrated Flexbox & Grid Game
+// Database-integrated Flexbox & Grid Game - IMPROVED
 const Game = {
     currentLevelIndex: 0,
     currentLevel: null,
     dbQuestions: [],
-    user: null
+    user: null,
+    completedQuestions: new Set()
 };
 
 // Initialize
@@ -29,6 +30,16 @@ async function loadUserData() {
     try {
         const response = await API.Auth.getCurrentUser();
         Game.user = response.data || response;
+        
+        // Load completed questions from user progress
+        if (Game.user.progress && Array.isArray(Game.user.progress)) {
+            Game.user.progress.forEach(p => {
+                if (p.completed) {
+                    Game.completedQuestions.add(p.questionId.toString());
+                }
+            });
+        }
+        
         updateStats();
     } catch (error) {
         console.error('Error loading user:', error);
@@ -54,12 +65,35 @@ async function loadQuestionsFromDB() {
             return;
         }
         
-        loadLevel(0);
+        // Find last incomplete question or start from beginning
+        let startIndex = findLastIncompleteQuestion();
+        loadLevel(startIndex);
         populateLevelSelector();
     } catch (error) {
         console.error('Error loading questions:', error);
         alert('Failed to load questions');
     }
+}
+
+// Find last incomplete question
+function findLastIncompleteQuestion() {
+    // If all questions completed, start from last question
+    const allCompleted = Game.dbQuestions.every(q => 
+        Game.completedQuestions.has(q._id)
+    );
+    
+    if (allCompleted && Game.dbQuestions.length > 0) {
+        return Game.dbQuestions.length - 1;
+    }
+    
+    // Find first incomplete question
+    for (let i = 0; i < Game.dbQuestions.length; i++) {
+        if (!Game.completedQuestions.has(Game.dbQuestions[i]._id)) {
+            return i;
+        }
+    }
+    
+    return 0;
 }
 
 // Load level
@@ -70,33 +104,48 @@ function loadLevel(index) {
     const q = Game.dbQuestions[index];
     Game.currentLevel = q;
     
+    // Check if completed
+    const isCompleted = Game.completedQuestions.has(q._id);
+    
     // Update UI
-    document.getElementById('chapterNum').textContent = `Question ${index + 1}`;
+    document.getElementById('chapterNum').textContent = `Question ${index + 1} of ${Game.dbQuestions.length}`;
     document.getElementById('questTitle').textContent = q.title;
-    document.getElementById('questXP').innerHTML = `<i class="fas fa-bolt"></i> +${q.points} XP`;
+    document.getElementById('questXP').innerHTML = `<i class="fas fa-bolt"></i> ${isCompleted ? 'Completed' : '+' + q.points + ' XP'}`;
     
     // Badges
     document.getElementById('topicBadge').textContent = q.topic.toUpperCase();
+    document.getElementById('topicBadge').className = `badge badge-${q.topic === 'flexbox' ? 'flexbox' : 'grid'}`;
     document.getElementById('difficultyBadge').textContent = q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
     document.getElementById('difficultyBadge').className = `badge badge-${q.difficulty}`;
     
-    // Content
-    document.getElementById('storyText').textContent = q.description;
+    // Content - Better formatting
+    document.getElementById('storyText').textContent = q.description || 'Complete this CSS challenge!';
     document.getElementById('dialoguesContainer').innerHTML = '';
-    document.getElementById('missionGoal').textContent = q.description;
-    document.getElementById('missionHint').textContent = q.hints && q.hints.length > 0 ? q.hints[0] : 'Use CSS properties';
-    document.getElementById('tipContent').innerHTML = q.hints && q.hints.length > 1 ? q.hints[1] : 'Write your CSS code';
+    document.getElementById('missionGoal').textContent = q.description || 'Style the elements correctly';
+    document.getElementById('missionHint').textContent = q.hints && q.hints.length > 0 ? q.hints[0] : 'Use CSS properties to match the goal layout';
+    
+    // Better tip formatting
+    const tipHTML = q.hints && q.hints.length > 1 
+        ? q.hints[1].split(',').map(h => `<code>${h.trim()}</code>`).join(', ')
+        : '<code>display: flex</code>, <code>justify-content</code>, <code>align-items</code>';
+    document.getElementById('tipContent').innerHTML = `Try using: ${tipHTML}`;
     
     // Editor
-    document.getElementById('cssEditor').value = '.flex-container {\n  /* Write your CSS */\n  \n}';
+    const initialCode = q.initialCSS || '.flex-container {\n  /* Write your CSS here */\n  \n}';
+    document.getElementById('cssEditor').value = initialCode;
     updateLineNumbers();
     
-    // Battlefield - simple preview
+    // Battlefield
     loadBattlefield();
     loadGoalPreview();
     
     applyStyles();
     updateProgressBar();
+    
+    // Show completion badge if completed
+    if (isCompleted) {
+        showToast('✅ Already completed! Try again for practice', 'info');
+    }
 }
 
 function loadBattlefield() {
@@ -106,9 +155,9 @@ function loadBattlefield() {
     
     const count = q.charCount || 3;
     const theme = q.charTheme || 'wizard';
-    const boxSize = q.boxSize || 50;
-    const containerHeight = q.containerHeight || 250;
-    const themes = { wizard: '🧙', dragon: '🐉', elf: '🧝', knight: '⚔️', fairy: '🧚' };
+    const boxSize = q.boxSize || 70;
+    const containerHeight = q.containerHeight || 400;
+    const themes = { wizard: '🧙', dragon: '🐉', elf: '🧝', knight: '⚔️', fairy: '🧚', star: '⭐', gem: '💎', wand: '🪄' };
     const mixedThemes = ['wizard', 'dragon', 'elf', 'knight', 'fairy'];
     
     for (let i = 0; i < count; i++) {
@@ -116,13 +165,18 @@ function loadBattlefield() {
         div.className = 'character char-order';
         const currentTheme = theme === 'mixed' ? mixedThemes[i % mixedThemes.length] : theme;
         const emoji = themes[currentTheme] || '🧙';
-        div.innerHTML = `${emoji}<span class="char-label">Box ${i + 1}</span>`;
+        div.innerHTML = `${emoji}<span class="char-label">Item ${i + 1}</span>`;
         div.style.width = `${boxSize}px`;
         div.style.height = `${boxSize}px`;
+        div.style.minWidth = `${boxSize}px`;
+        div.style.minHeight = `${boxSize}px`;
         container.appendChild(div);
     }
     
-    // Inject CSS via style tag to override everything
+    // Set container height
+    container.style.minHeight = `${containerHeight}px`;
+    
+    // Apply initial CSS if exists
     let styleTag = document.getElementById('liveDynamicCSS');
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -133,11 +187,10 @@ function loadBattlefield() {
     if (q.initialCSS) {
         const cssMatch = q.initialCSS.match(/\.flex-container\s*\{([^}]+)\}/s);
         if (cssMatch && cssMatch[1]) {
-            styleTag.textContent = `#flexContainer { ${cssMatch[1].trim()} min-height: ${containerHeight}px !important; width: 100% !important; }`;
-            console.log('Injected Initial CSS:', cssMatch[1].trim());
+            styleTag.textContent = `#flexContainer { ${cssMatch[1].trim()} }`;
         }
     } else {
-        styleTag.textContent = `#flexContainer { min-height: ${containerHeight}px !important; width: 100% !important; }`;
+        styleTag.textContent = '';
     }
 }
 
@@ -148,9 +201,9 @@ function loadGoalPreview() {
     
     const count = q.charCount || 3;
     const theme = q.charTheme || 'wizard';
-    const boxSize = q.boxSize || 50;
-    const containerHeight = q.containerHeight || 250;
-    const themes = { wizard: '🧙', dragon: '🐉', elf: '🧝', knight: '⚔️', fairy: '🧚' };
+    const boxSize = q.boxSize || 70;
+    const containerHeight = q.containerHeight || 400;
+    const themes = { wizard: '🧙', dragon: '🐉', elf: '🧝', knight: '⚔️', fairy: '🧚', star: '⭐', gem: '💎', wand: '🪄' };
     const mixedThemes = ['wizard', 'dragon', 'elf', 'knight', 'fairy'];
     
     for (let i = 0; i < count; i++) {
@@ -158,13 +211,18 @@ function loadGoalPreview() {
         div.className = 'character char-order';
         const currentTheme = theme === 'mixed' ? mixedThemes[i % mixedThemes.length] : theme;
         const emoji = themes[currentTheme] || '🧙';
-        div.innerHTML = `${emoji}<span class="char-label">Box ${i + 1}</span>`;
+        div.innerHTML = `${emoji}<span class="char-label">Item ${i + 1}</span>`;
         div.style.width = `${boxSize}px`;
         div.style.height = `${boxSize}px`;
+        div.style.minWidth = `${boxSize}px`;
+        div.style.minHeight = `${boxSize}px`;
         container.appendChild(div);
     }
     
-    // Inject CSS via style tag to override everything
+    // Set container height
+    container.style.minHeight = `${containerHeight}px`;
+    
+    // Apply expected CSS
     let styleTag = document.getElementById('goalDynamicCSS');
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -175,8 +233,7 @@ function loadGoalPreview() {
     if (q.expectedCSS) {
         const cssMatch = q.expectedCSS.match(/\.flex-container\s*\{([^}]+)\}/s);
         if (cssMatch && cssMatch[1]) {
-            styleTag.textContent = `#goalContainer { ${cssMatch[1].trim()} min-height: ${containerHeight}px !important; width: 100% !important; }`;
-            console.log('Injected Goal CSS:', cssMatch[1].trim());
+            styleTag.textContent = `#goalContainer { ${cssMatch[1].trim()} }`;
         }
     }
 }
@@ -190,20 +247,27 @@ function updateLineNumbers() {
 
 function runCode() {
     applyStyles();
-    showToast('Code applied!', 'success');
+    showToast('✨ Code applied!', 'success');
 }
 
 function applyStyles() {
     const css = document.getElementById('cssEditor').value;
     const container = document.getElementById('flexContainer');
     
+    // Reset to base styles
     container.style.cssText = `
-        width: 100%; min-height: calc(100vh - 180px); height: auto; border-radius: 16px; padding: 30px;
+        width: 100%; 
+        min-height: ${Game.currentLevel.containerHeight || 400}px; 
+        height: auto; 
+        border-radius: 16px; 
+        padding: 30px;
         border: 2px dashed rgba(99, 102, 241, 0.25);
         background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
-        display: flex; flex-wrap: wrap; align-content: flex-start; gap: 15px; overflow: auto;
+        gap: 15px; 
+        overflow: auto;
     `;
     
+    // Apply user CSS
     const match = css.match(/\.flex-container\s*\{([^}]*)\}/s);
     if (match && match[1]) {
         const props = match[1].split(';').filter(p => p.trim() && !p.trim().startsWith('/*'));
@@ -215,37 +279,116 @@ function applyStyles() {
                 if (name && value) {
                     try {
                         container.style[name.replace(/-([a-z])/g, g => g[1].toUpperCase())] = value;
-                    } catch (e) {}
+                    } catch (e) {
+                        console.error('CSS error:', e);
+                    }
                 }
             }
         });
     }
+    
+    // Update validation bar
+    updateValidationBar(css);
+}
+
+function updateValidationBar(css) {
+    const bar = document.getElementById('validationBar');
+    const q = Game.currentLevel;
+    
+    if (!q.expectedCSS) {
+        bar.innerHTML = '';
+        return;
+    }
+    
+    // Extract required properties from expected CSS
+    const expectedMatch = q.expectedCSS.match(/\.flex-container\s*\{([^}]*)\}/s);
+    if (!expectedMatch) {
+        bar.innerHTML = '';
+        return;
+    }
+    
+    const expectedProps = expectedMatch[1]
+        .split(';')
+        .filter(p => p.trim() && !p.trim().startsWith('/*'))
+        .map(p => {
+            const colonIndex = p.indexOf(':');
+            if (colonIndex > -1) {
+                return {
+                    name: p.substring(0, colonIndex).trim(),
+                    value: p.substring(colonIndex + 1).trim()
+                };
+            }
+            return null;
+        })
+        .filter(p => p !== null);
+    
+    // Check user CSS
+    const userMatch = css.match(/\.flex-container\s*\{([^}]*)\}/s);
+    const userProps = userMatch ? userMatch[1]
+        .split(';')
+        .filter(p => p.trim() && !p.trim().startsWith('/*'))
+        .map(p => {
+            const colonIndex = p.indexOf(':');
+            if (colonIndex > -1) {
+                return {
+                    name: p.substring(0, colonIndex).trim(),
+                    value: p.substring(colonIndex + 1).trim()
+                };
+            }
+            return null;
+        })
+        .filter(p => p !== null) : [];
+    
+    // Create validation items
+    bar.innerHTML = expectedProps.map(expected => {
+        const userProp = userProps.find(u => u.name === expected.name);
+        const isValid = userProp && userProp.value === expected.value;
+        const icon = isValid ? 'check' : 'times';
+        const className = isValid ? 'valid' : 'invalid';
+        
+        return `<div class="validation-item ${className}">
+            <i class="fas fa-${icon}"></i>
+            <span>${expected.name}: ${expected.value}</span>
+        </div>`;
+    }).join('');
 }
 
 function resetCode() {
-    document.getElementById('cssEditor').value = '.flex-container {\n  /* Write your CSS */\n  \n}';
+    const initialCode = Game.currentLevel.initialCSS || '.flex-container {\n  /* Write your CSS here */\n  \n}';
+    document.getElementById('cssEditor').value = initialCode;
     updateLineNumbers();
     applyStyles();
-    showToast('Code reset!', 'info');
+    showToast('🔄 Code reset!', 'info');
 }
 
 async function submitSolution() {
     const css = document.getElementById('cssEditor').value;
     
+    // Show loading
+    const submitBtn = event.target;
+    const originalHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    
     try {
         const response = await API.Questions.submitAnswer(Game.currentLevel._id, css);
         const data = response.data || response;
         
-        console.log('Submit response:', data);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
         
         if (data.correct) {
+            // Mark as completed
+            Game.completedQuestions.add(Game.currentLevel._id);
             handleVictory(data);
         } else {
-            handleDefeat();
+            handleDefeat(data);
         }
     } catch (error) {
         console.error('Submit error:', error);
-        showToast('Submission failed', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
+        showToast('❌ Submission failed', 'error');
     }
 }
 
@@ -253,19 +396,26 @@ function handleVictory(response) {
     // Update user points from response
     if (response.newPoints !== undefined && response.newPoints !== null) {
         Game.user.points = response.newPoints;
-        console.log('Updated points to:', response.newPoints);
     }
     updateStats();
     
-    document.getElementById('earnedXP').textContent = `+${Game.currentLevel.points}`;
-    document.getElementById('streakCount').textContent = '1';
+    const isAlreadyCompleted = response.alreadyCompleted || false;
+    
+    document.getElementById('earnedXP').textContent = isAlreadyCompleted ? '0' : `+${Game.currentLevel.points}`;
+    document.getElementById('streakCount').textContent = Game.completedQuestions.size;
+    document.getElementById('victoryMessage').textContent = isAlreadyCompleted 
+        ? 'Already completed! No additional points awarded.' 
+        : "You've mastered this CSS spell!";
     document.getElementById('victoryModal').classList.add('active');
     
-    createConfetti();
+    if (!isAlreadyCompleted) {
+        createConfetti();
+    }
 }
 
-function handleDefeat() {
-    document.getElementById('defeatHint').textContent = Game.currentLevel.hints && Game.currentLevel.hints.length > 0 ? Game.currentLevel.hints[0] : 'Check your CSS';
+function handleDefeat(data) {
+    const hint = data.hint || (Game.currentLevel.hints && Game.currentLevel.hints.length > 0 ? Game.currentLevel.hints[0] : 'Check your CSS properties and values');
+    document.getElementById('defeatHint').textContent = hint;
     document.getElementById('defeatModal').classList.add('active');
 }
 
@@ -274,7 +424,7 @@ function nextLevel() {
     if (Game.currentLevelIndex < Game.dbQuestions.length - 1) {
         loadLevel(Game.currentLevelIndex + 1);
     } else {
-        showToast('🎉 All levels complete!', 'success');
+        showToast('🎉 All levels complete! Great job!', 'success');
         setTimeout(() => window.location.href = 'games.html', 2000);
     }
 }
@@ -283,16 +433,17 @@ function nextLevel() {
 function updateStats() {
     if (Game.user) {
         document.getElementById('totalXP').textContent = Game.user.points || 0;
+        document.getElementById('winStreak').textContent = Game.completedQuestions.size;
         document.getElementById('playerLevel').textContent = Math.floor((Game.user.points || 0) / 200) + 1;
     }
 }
 
 function updateProgressBar() {
-    const current = Game.currentLevelIndex + 1;
+    const completed = Game.completedQuestions.size;
     const total = Game.dbQuestions.length;
-    const percent = Math.round((current / total) * 100);
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
     
-    document.getElementById('progressText').textContent = `${current}/${total}`;
+    document.getElementById('progressText').textContent = `${completed}/${total}`;
     document.getElementById('progressBar').style.width = `${percent}%`;
     document.getElementById('progressPercent').textContent = `${percent}%`;
 }
@@ -332,8 +483,9 @@ function populateLevelSelector() {
     grid.innerHTML = '';
     
     Game.dbQuestions.forEach((q, i) => {
+        const isCompleted = Game.completedQuestions.has(q._id);
         const card = document.createElement('div');
-        card.className = 'level-card';
+        card.className = `level-card ${isCompleted ? 'completed' : ''}`;
         card.onclick = () => {
             loadLevel(i);
             closeLevelsModal();
@@ -392,7 +544,8 @@ function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i> ${message}`;
+    const icons = { success: 'check-circle', error: 'times-circle', info: 'info-circle' };
+    toast.innerHTML = `<i class="fas fa-${icons[type]}"></i> ${message}`;
     container.appendChild(toast);
     
     setTimeout(() => {
@@ -429,7 +582,7 @@ function showSolution() {
         document.getElementById('cssEditor').value = q.expectedCSS;
         updateLineNumbers();
         applyStyles();
-        showToast('Solution loaded', 'info');
+        showToast('💡 Solution loaded', 'info');
         closeModal('defeatModal');
     }
 }
@@ -449,20 +602,20 @@ async function addNewLevel(event) {
         expectedCSS: document.getElementById('newLevelCSS').value,
         charCount: 3,
         charTheme: 'wizard',
-        boxSize: 50,
-        containerHeight: 250,
+        boxSize: 70,
+        containerHeight: 400,
         status: 'active'
     };
     
     try {
         await API.Questions.create(newQuestion);
-        showToast('Level created!', 'success');
+        showToast('✅ Level created!', 'success');
         clearAddLevelForm();
         await loadQuestionsFromDB();
         closeLevelsModal();
     } catch (error) {
         console.error('Error creating level:', error);
-        showToast('Failed to create level', 'error');
+        showToast('❌ Failed to create level', 'error');
     }
 }
 

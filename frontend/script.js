@@ -265,6 +265,7 @@ const FormManager = {
                 if (valid) {
                     // Handle login with API
                     const btn = loginForm.querySelector('button[type="submit"]');
+                    const originalHTML = btn.innerHTML;
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
@@ -272,14 +273,18 @@ const FormManager = {
                         .then(response => {
                             localStorage.setItem('token', response.token);
                             localStorage.setItem('user', JSON.stringify(response.user));
-                            alert('Login successful!');
+                            
                             ModalManager.close('loginModal');
-                            window.location.reload();
+                            showSuccessMessage('✅ Login successful! Welcome back, ' + response.user.name + '!');
+                            
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
                         })
                         .catch(error => {
-                            alert(error.message || 'Login failed');
+                            showErrorMessage('❌ ' + (error.message || 'Login failed. Please check your credentials.'));
                             btn.disabled = false;
-                            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+                            btn.innerHTML = originalHTML;
                         });
                 }
             });
@@ -321,6 +326,7 @@ const FormManager = {
                 if (valid) {
                     // Handle signup with API
                     const btn = signupForm.querySelector('button[type="submit"]');
+                    const originalHTML = btn.innerHTML;
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
@@ -332,14 +338,18 @@ const FormManager = {
                         .then(response => {
                             localStorage.setItem('token', response.token);
                             localStorage.setItem('user', JSON.stringify(response.user));
-                            alert('Account created successfully!');
+                            
                             ModalManager.close('signupModal');
-                            window.location.reload();
+                            showSuccessMessage('🎉 Account created successfully! Welcome, ' + response.user.name + '!');
+                            
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
                         })
                         .catch(error => {
-                            alert(error.message || 'Signup failed');
+                            showErrorMessage('❌ ' + (error.message || 'Signup failed. Please try again.'));
                             btn.disabled = false;
-                            btn.innerHTML = '<i class="fas fa-rocket"></i> Create Account';
+                            btn.innerHTML = originalHTML;
                         });
                 }
             });
@@ -436,13 +446,49 @@ async function updateNavbar() {
     }
 }
 
-// Logout function
+// Logout function with confirmation modal
 function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.reload();
-    }
+    // Create custom confirmation modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal" style="max-width: 450px; text-align: center;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);">
+                <i class="fas fa-sign-out-alt" style="font-size: 2rem; color: white;"></i>
+            </div>
+            <h2 class="modal-title">Logout Confirmation</h2>
+            <p class="modal-subtitle" style="font-size: 1rem; margin-bottom: 24px;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-ghost" style="flex: 1;" onclick="this.closest('.modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #ef4444, #dc2626);" id="confirmLogout">
+                    <i class="fas fa-sign-out-alt"></i> Yes, Logout
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('#confirmLogout').onclick = () => {
+        modal.remove();
+        
+        // Show loading
+        showGlobalLoading('Logging out...');
+        
+        setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            hideGlobalLoading();
+            showSuccessMessage('✅ Logged out successfully! See you soon!');
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }, 500);
+    };
 }
 
 // ============================================
@@ -452,23 +498,30 @@ function logout() {
 // Face Login
 async function loginWithFace() {
     try {
-        BiometricHelper.showCameraModal(async (faceImage) => {
+        BiometricHelper.showCameraModal(async (faceImage, pin) => {
+            // Show global loading
+            showGlobalLoading('Recognizing your face...');
+            
             try {
-                const response = await API.Biometric.verifyFace(faceImage);
+                const response = await API.Biometric.verifyFace(faceImage, pin);
                 
                 if (response.needsPin) {
-                    BiometricHelper.showPinModal(response.userName, async (pin) => {
+                    hideGlobalLoading();
+                    BiometricHelper.showPinModal(response.userName, async (enteredPin) => {
+                        showGlobalLoading('Verifying PIN...');
                         try {
-                            const verifyResponse = await API.Biometric.verifyFace(faceImage, pin);
+                            const verifyResponse = await API.Biometric.verifyFace(faceImage, enteredPin);
                             const { token, user } = verifyResponse.data;
                             
                             localStorage.setItem('token', token);
                             localStorage.setItem('user', JSON.stringify(user));
                             
-                            alert('✅ Welcome back, ' + user.name + '!');
-                            window.location.href = 'dashboard.html';
+                            hideGlobalLoading();
+                            showSuccessMessage('✅ Welcome back, ' + user.name + '!');
+                            setTimeout(() => window.location.href = 'dashboard.html', 1000);
                         } catch (error) {
-                            alert('❌ ' + (error.message || 'Invalid PIN'));
+                            hideGlobalLoading();
+                            showErrorMessage('❌ ' + (error.message || 'Invalid PIN'));
                         }
                     });
                 } else {
@@ -477,38 +530,46 @@ async function loginWithFace() {
                     localStorage.setItem('token', token);
                     localStorage.setItem('user', JSON.stringify(user));
                     
-                    alert('✅ Welcome back, ' + user.name + '!');
-                    window.location.href = 'dashboard.html';
+                    hideGlobalLoading();
+                    showSuccessMessage('✅ Welcome back, ' + user.name + '!');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
                 }
             } catch (error) {
-                alert('❌ Face not recognized. Please try again or use password.');
+                hideGlobalLoading();
+                showErrorMessage('❌ Face not recognized. Please try again or use password.');
             }
         });
     } catch (error) {
-        alert('❌ Camera access required for face login');
+        showErrorMessage('❌ Camera access required for face login');
     }
 }
 
 // Voice Login
 async function loginWithVoice() {
     try {
-        BiometricHelper.showMicModal(async (voiceAudio) => {
+        BiometricHelper.showMicModal(async (voiceAudio, pin) => {
+            showGlobalLoading('Recognizing your voice...');
+            
             try {
-                const response = await API.Biometric.verifyVoice(voiceAudio);
+                const response = await API.Biometric.verifyVoice(voiceAudio, pin);
                 
                 if (response.needsPin) {
-                    BiometricHelper.showPinModal(response.userName, async (pin) => {
+                    hideGlobalLoading();
+                    BiometricHelper.showPinModal(response.userName, async (enteredPin) => {
+                        showGlobalLoading('Verifying PIN...');
                         try {
-                            const verifyResponse = await API.Biometric.verifyVoice(voiceAudio, pin);
+                            const verifyResponse = await API.Biometric.verifyVoice(voiceAudio, enteredPin);
                             const { token, user } = verifyResponse.data;
                             
                             localStorage.setItem('token', token);
                             localStorage.setItem('user', JSON.stringify(user));
                             
-                            alert('✅ Welcome back, ' + user.name + '!');
-                            window.location.href = 'dashboard.html';
+                            hideGlobalLoading();
+                            showSuccessMessage('✅ Welcome back, ' + user.name + '!');
+                            setTimeout(() => window.location.href = 'dashboard.html', 1000);
                         } catch (error) {
-                            alert('❌ ' + (error.message || 'Invalid PIN'));
+                            hideGlobalLoading();
+                            showErrorMessage('❌ ' + (error.message || 'Invalid PIN'));
                         }
                     });
                 } else {
@@ -517,47 +578,57 @@ async function loginWithVoice() {
                     localStorage.setItem('token', token);
                     localStorage.setItem('user', JSON.stringify(user));
                     
-                    alert('✅ Welcome back, ' + user.name + '!');
-                    window.location.href = 'dashboard.html';
+                    hideGlobalLoading();
+                    showSuccessMessage('✅ Welcome back, ' + user.name + '!');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
                 }
             } catch (error) {
-                alert('❌ Voice not recognized. Please try again or use password.');
+                hideGlobalLoading();
+                showErrorMessage('❌ Voice not recognized. Please try again or use password.');
             }
         });
     } catch (error) {
-        alert('❌ Microphone access required for voice login');
+        showErrorMessage('❌ Microphone access required for voice login');
     }
 }
 
 // Enroll Face (call after user logs in)
 async function enrollFace() {
     try {
-        BiometricHelper.showCameraModal(async (faceImage) => {
+        BiometricHelper.showCameraModal(async (faceImage, pin) => {
+            showGlobalLoading('Enrolling your face...');
+            
             try {
-                await API.Biometric.enrollFace(faceImage);
-                alert('Face enrolled successfully! You can now login with your face.');
+                await API.Biometric.enrollFace(faceImage, pin);
+                hideGlobalLoading();
+                showSuccessMessage('✅ Face enrolled successfully! You can now login with your face.');
             } catch (error) {
-                alert('Failed to enroll face: ' + error.message);
+                hideGlobalLoading();
+                showErrorMessage('❌ Failed to enroll face: ' + error.message);
             }
-        });
+        }, true);
     } catch (error) {
-        alert('Camera access required');
+        showErrorMessage('❌ Camera access required');
     }
 }
 
 // Enroll Voice (call after user logs in)
 async function enrollVoice() {
     try {
-        BiometricHelper.showMicModal(async (voiceAudio) => {
+        BiometricHelper.showMicModal(async (voiceAudio, pin) => {
+            showGlobalLoading('Enrolling your voice...');
+            
             try {
-                await API.Biometric.enrollVoice(voiceAudio);
-                alert('Voice enrolled successfully! You can now login with your voice.');
+                await API.Biometric.enrollVoice(voiceAudio, pin);
+                hideGlobalLoading();
+                showSuccessMessage('✅ Voice enrolled successfully! You can now login with your voice.');
             } catch (error) {
-                alert('Failed to enroll voice: ' + error.message);
+                hideGlobalLoading();
+                showErrorMessage('❌ Failed to enroll voice: ' + error.message);
             }
-        });
+        }, true);
     } catch (error) {
-        alert('Microphone access required');
+        showErrorMessage('❌ Microphone access required');
     }
 }
 
@@ -568,3 +639,115 @@ window.loginWithFace = loginWithFace;
 window.loginWithVoice = loginWithVoice;
 window.enrollFace = enrollFace;
 window.enrollVoice = enrollVoice;
+
+// Global loading overlay
+function showGlobalLoading(message = 'Loading...') {
+    let overlay = document.getElementById('globalLoadingOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'globalLoadingOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        `;
+        overlay.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: rgba(15, 15, 26, 0.95); border-radius: 20px; border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                <div style="width: 80px; height: 80px; border: 4px solid rgba(99, 102, 241, 0.2); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 24px; animation: spin 1s linear infinite;"></div>
+                <p id="loadingMessage" style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;"></p>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+    overlay.querySelector('#loadingMessage').textContent = message;
+    overlay.style.display = 'flex';
+}
+
+function hideGlobalLoading() {
+    const overlay = document.getElementById('globalLoadingOverlay');
+    if (overlay) {
+        overlay.style.animation = 'fadeOut 0.2s ease';
+        setTimeout(() => overlay.style.display = 'none', 200);
+    }
+}
+
+// Success/Error messages
+function showSuccessMessage(message) {
+    showMessage(message, 'success');
+}
+
+function showErrorMessage(message) {
+    showMessage(message, 'error');
+}
+
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        z-index: 100000;
+        padding: 18px 28px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        animation: slideInRight 0.3s ease;
+        max-width: 400px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    `;
+    
+    if (type === 'success') {
+        toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        toast.style.color = 'white';
+        toast.innerHTML = `<i class="fas fa-check-circle" style="font-size: 1.5rem;"></i><span>${message}</span>`;
+    } else if (type === 'error') {
+        toast.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        toast.style.color = 'white';
+        toast.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i><span>${message}</span>`;
+    } else {
+        toast.style.background = 'linear-gradient(135deg, #6366f1, #4f46e5)';
+        toast.style.color = 'white';
+        toast.innerHTML = `<i class="fas fa-info-circle" style="font-size: 1.5rem;"></i><span>${message}</span>`;
+    }
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Add animations
+const animationStyle = document.createElement('style');
+animationStyle.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(animationStyle);

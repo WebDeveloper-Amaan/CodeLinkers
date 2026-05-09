@@ -29,7 +29,11 @@ app.use('/api/chatbot', require('./src/routes/chatbotRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Server is running' });
+  res.json({ 
+    success: true, 
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Serve frontend
@@ -40,13 +44,35 @@ app.get('*', (req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ success: false, message: err.message });
+  res.status(500).json({ 
+    success: false, 
+    message: err.message || 'Server Error'
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📁 Frontend: http://localhost:${PORT}`);
   console.log(`🔌 API: http://localhost:${PORT}/api`);
 });
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+module.exports = app;
